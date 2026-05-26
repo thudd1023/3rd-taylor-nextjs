@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useId } from "react";
-import { MapPin, Calendar, Users, Star, Wine, Mic, MessageSquare, Check } from "lucide-react";
+import { Wine, Sparkles, UtensilsCrossed, Users } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 
@@ -45,41 +46,8 @@ const RSVPForm = ({ prefix }: { prefix: string }) => {
     return () => { formFrame.remove(); };
   }, [instanceId, prefix]);
 
-  return <div ref={ref} className="min-h-[400px]" />;
+  return <div ref={ref} className="min-h-[500px]" />;
 };
-
-const audience = [
-  {
-    title: "CEOs & Founders",
-    body: "$1M–$50M annual revenue B2B tech companies actively expanding into the U.S. market. Decision-makers with budget authority evaluating partnerships and tools for growth.",
-  },
-  {
-    title: "Marketing Leaders",
-    body: "CMOs and VPs of Marketing at $10M–$400M ARR companies driving growth strategy. Focused on pipeline generation, brand building, and U.S. market entry.",
-  },
-  {
-    title: "GTM Executives",
-    body: "Revenue and sales leaders evaluating U.S. go-to-market approaches. Hands-on operators looking for tools, strategies, and partners to accelerate growth.",
-  },
-];
-
-const evening = [
-  {
-    icon: Wine,
-    title: "Welcome Cocktails",
-    body: "Arrive, connect, and settle in. A relaxed opening reception with curated drinks and introductions.",
-  },
-  {
-    icon: Mic,
-    title: "Sponsor Spotlights",
-    body: "Brief, valuable insights from our sponsors — no sales pitches, just tools and strategies that matter to this room.",
-  },
-  {
-    icon: MessageSquare,
-    title: "Private Dinner",
-    body: "An intimate seated dinner designed for real conversation. Meet the people in the room, not just the ones on stage.",
-  },
-];
 
 export default function SeineToSFRSVP() {
   return (
@@ -89,174 +57,196 @@ export default function SeineToSFRSVP() {
 
         {/* Hero */}
         <section className="relative overflow-hidden border-b border-white/10">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_#c8f135_0%,_transparent_50%)] opacity-10 pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_#c8f135_0%,_transparent_60%)] opacity-10 pointer-events-none" />
           <div className="container pt-24 pb-20 md:pt-32 md:pb-28">
             <div className="grid lg:grid-cols-2 gap-16 items-start">
+
+              {/* Left: event info */}
               <div>
+                <div className="w-24 h-24 mb-8">
+                  <img
+                    src="/seine-to-sf-badge.png"
+                    alt="From the Seine to San Francisco — 3rd + Taylor"
+                    className="w-full h-full object-contain"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                </div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-white/60 mb-8">
-                  RSVP · June 2026
+                  Invitation · VivaTech Week 2026
                 </div>
                 <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-medium leading-[0.95] mb-6">
                   From the Seine<br />
                   <em className="italic text-[#c8f135]">to San Francisco.</em>
                 </h1>
                 <p className="text-lg md:text-xl text-white/60 leading-relaxed mb-10 max-w-lg">
-                  An exclusive dinner for 30–50 hand-picked B2B tech leaders during VivaTech Week in Paris. Request your seat below — attendance is curated, not sold.
+                  An evening of conversation, cocktails &amp; private dining for bold B2B tech leaders scaling into the U.S.
                 </p>
-                <div className="flex flex-wrap gap-6 mb-10">
-                  <div className="flex items-center gap-2 text-sm text-white/70">
-                    <Calendar className="h-4 w-4 text-[#c8f135]" />
-                    June 18, 2026
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#c8f135] mb-2">When</div>
+                    <div className="font-semibold text-white text-sm">Thursday, June 18, 2026</div>
+                    <div className="text-white/50 text-xs mt-1">VivaTech Week · 19:15</div>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-white/70">
-                    <MapPin className="h-4 w-4 text-[#c8f135]" />
-                    Paris, France · VivaTech Week
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-white/70">
-                    <Users className="h-4 w-4 text-[#c8f135]" />
-                    30–50 Curated Attendees
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-white/70">
-                    <Star className="h-4 w-4 text-[#c8f135]" />
-                    4th Edition
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#c8f135] mb-2">Where</div>
+                    <div className="font-semibold text-white text-sm">Paris, France</div>
+                    <div className="text-white/50 text-xs mt-1">Venue details upon RSVP</div>
                   </div>
                 </div>
-                <div className="relative w-40 h-40">
-                  <img
-                    src="/seine-to-sf-badge.png"
-                    alt="From the Seine to San Francisco — 3rd + Taylor"
-                    className="w-full h-full object-contain drop-shadow-2xl"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                  />
+                <div className="rounded-2xl border border-[#c8f135]/20 bg-[#c8f135]/5 p-5">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Sparkles className="h-4 w-4 text-[#c8f135]" />
+                    <span className="text-sm font-semibold text-white">Our most impactful edition yet.</span>
+                  </div>
+                  <p className="text-white/50 text-xs leading-relaxed">
+                    We&apos;re curating an exceptional evening with a select group of sponsors enhancing the experience.{" "}
+                    <Link href="/paris-dinner" className="text-[#c8f135] hover:underline">Become a sponsor →</Link>
+                  </p>
                 </div>
               </div>
 
-              {/* Hero RSVP form card */}
+              {/* Right: RSVP form */}
               <div className="rounded-3xl bg-white p-6 md:p-8 shadow-2xl">
-                <div className="text-xs font-semibold uppercase tracking-widest text-[#0d0d0d]/50 mb-2">
-                  Request Your Seat
-                </div>
-                <h2 className="font-display text-2xl font-medium leading-tight mb-2 text-[#0d0d0d]">
-                  Attendance is curated,<br />not sold.
+                <div className="text-xs font-semibold uppercase tracking-widest text-[#0d0d0d]/50 mb-2">Reserve Your Seat</div>
+                <h2 className="font-display text-2xl md:text-3xl font-medium leading-tight mb-6 text-[#0d0d0d]">
+                  R.S.V.P. — June 18, 2026
                 </h2>
-                <p className="text-sm text-[#0d0d0d]/60 mb-6">
-                  Complete the form and we&apos;ll follow up within 48 hours to confirm your invitation.
-                </p>
                 <RSVPForm prefix="rsvp-hero" />
               </div>
             </div>
           </div>
         </section>
 
-        {/* About the Event */}
+        {/* Why This Event */}
         <section className="border-b border-white/10 py-20 md:py-28">
           <div className="container max-w-4xl">
-            <div className="text-xs font-semibold uppercase tracking-widest text-[#c8f135] mb-4">About the Event</div>
-            <h2 className="font-display text-4xl md:text-5xl font-medium leading-tight mb-8">
-              This is not a conference.<br />It&apos;s a dinner worth flying for.
+            <div className="text-xs font-semibold uppercase tracking-widest text-[#c8f135] mb-6">Why This Event?</div>
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-medium leading-tight mb-10">
+              You&apos;ve proven success.<br />
+              You&apos;re ready to scale.<br />
+              <em className="italic text-white/40">Now what?</em>
             </h2>
-            <p className="text-lg text-white/60 leading-relaxed mb-6">
-              3rd + Taylor Agency is hosting its fourth exclusive dinner in Paris — its third during VivaTech Week — bringing together 30–50 hand-picked B2B tech leaders for an evening of conversation, curated insights, cocktails, and private dining.
-            </p>
-            <p className="text-lg text-white/60 leading-relaxed mb-12">
-              After three events across London and Paris in 2025, we&apos;ve built a format that actually works: small enough to have real conversations, curated enough that every person at the table is worth knowing, and relaxed enough that something real gets said.
-            </p>
-            <div className="grid md:grid-cols-4 gap-px bg-white/10 rounded-2xl overflow-hidden">
-              {[
-                { label: "Evening Format", value: "Cocktails · Spotlights · Dinner" },
-                { label: "Attendees", value: "30–50 curated leaders" },
-                { label: "Location", value: "Paris, VivaTech Week" },
-                { label: "Edition", value: "4th (3rd in Paris)" },
-              ].map((stat) => (
-                <div key={stat.label} className="bg-white/5 p-6 md:p-8">
-                  <div className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-2">{stat.label}</div>
-                  <div className="text-base font-semibold text-white">{stat.value}</div>
-                </div>
-              ))}
+            <div className="space-y-5 text-lg text-white/60 leading-relaxed max-w-3xl">
+              <p>
+                If you&apos;ve been thinking about U.S. expansion — or you&apos;re already trying to break in — it&apos;s time to connect with the people who can help you scale smarter.
+              </p>
+              <p className="italic text-white/50">
+                3rd + Taylor Agency is a U.S.-based revenue marketing firm that helps B2B tech companies sharpen their messaging, generate predictable pipeline, and build revenue in the U.S.
+              </p>
+              <p>
+                We&apos;re returning to Paris during VivaTech Week for our fourth gathering — and our most impactful one yet — bringing together founders, marketers, and growth leaders ready to do the same. This isn&apos;t a networking mixer. It&apos;s a curated experience built for high-growth companies.
+              </p>
             </div>
           </div>
         </section>
 
-        {/* Evening Format */}
+        {/* The Evening */}
         <section className="border-b border-white/10 py-20 md:py-28">
           <div className="container">
             <div className="text-xs font-semibold uppercase tracking-widest text-[#c8f135] mb-4">The Evening</div>
-            <h2 className="font-display text-4xl md:text-5xl font-medium leading-tight mb-4 max-w-2xl">
-              A night designed around real conversation.
+            <h2 className="font-display text-4xl md:text-5xl font-medium leading-tight mb-16">
+              One night. Three acts.
             </h2>
-            <p className="text-white/50 text-lg mb-16 max-w-2xl">
-              No panels. No badge scanning. Just curated people, curated conversation, and a meal worth staying for.
-            </p>
             <div className="grid md:grid-cols-3 gap-6">
-              {evening.map((item) => (
-                <div key={item.title} className="rounded-2xl border border-white/10 bg-white/5 p-8">
-                  <item.icon className="h-6 w-6 text-[#c8f135] mb-4" />
-                  <h3 className="font-semibold text-lg mb-3 text-white">{item.title}</h3>
-                  <p className="text-white/60 leading-relaxed text-sm">{item.body}</p>
+              {[
+                {
+                  Icon: Wine,
+                  time: "19:15 – 20:00",
+                  title: "Cocktail Hour",
+                  body: "Kick off the evening with cocktails and hors d'oeuvres alongside fellow B2B tech leaders. Meet the 3rd + Taylor team and our featured sponsors in an intimate Paris setting.",
+                },
+                {
+                  Icon: Sparkles,
+                  time: "Throughout",
+                  title: "Sponsor Spotlights",
+                  body: "Hear short, curated insights from this edition's sponsors — partners helping ambitious B2B brands accelerate U.S. growth. No pitch deck noise.",
+                },
+                {
+                  Icon: UtensilsCrossed,
+                  time: "20:00 – 21:45",
+                  title: "7-Course Tasting Menu",
+                  body: "For B2B tech leaders committed to U.S. expansion, we transition to an exquisite tasting dinner with wine pairing. Reserved seating only.",
+                },
+              ].map(({ Icon, time, title, body }) => (
+                <div key={title} className="rounded-2xl border border-white/10 bg-white/5 p-8">
+                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#c8f135]/15 mb-5">
+                    <Icon className="h-5 w-5 text-[#c8f135]" />
+                  </div>
+                  <div className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-2">{time}</div>
+                  <h3 className="font-semibold text-lg text-white mb-3">{title}</h3>
+                  <p className="text-white/60 text-sm leading-relaxed">{body}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Who Attends */}
+        {/* Who's Invited */}
         <section className="border-b border-white/10 py-20 md:py-28">
           <div className="container">
-            <div className="text-xs font-semibold uppercase tracking-widest text-[#c8f135] mb-4">Who Attends</div>
-            <h2 className="font-display text-4xl md:text-5xl font-medium leading-tight mb-4 max-w-2xl">
-              Every seat is filled by someone with authority and intent.
-            </h2>
-            <p className="text-white/50 text-lg mb-16 max-w-2xl">
-              Attendance is curated — not sold. No badge scanning. No trade show noise. Just qualified leaders with budget authority in an intimate setting.
-            </p>
-            <div className="grid md:grid-cols-3 gap-6 mb-16">
-              {audience.map((a) => (
-                <div key={a.title} className="rounded-2xl border border-white/10 bg-white/5 p-8">
-                  <h3 className="font-semibold text-lg mb-3 text-[#c8f135]">{a.title}</h3>
-                  <p className="text-white/60 leading-relaxed text-sm">{a.body}</p>
-                </div>
-              ))}
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 md:p-8">
-              <div className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-3">Industries Represented</div>
-              <div className="flex flex-wrap gap-2">
-                {["SaaS", "FinTech", "MedTech", "MarTech", "AI & ML", "Blockchain", "Web3", "Cybersecurity", "CleanTech"].map((i) => (
-                  <span key={i} className="rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-sm text-white/70">
-                    {i}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* What You Get */}
-        <section className="border-b border-white/10 py-20 md:py-28">
-          <div className="container max-w-4xl">
-            <div className="text-xs font-semibold uppercase tracking-widest text-[#c8f135] mb-4">What to Expect</div>
-            <h2 className="font-display text-4xl md:text-5xl font-medium leading-tight mb-12">
-              What you leave with.
+            <div className="text-xs font-semibold uppercase tracking-widest text-[#c8f135] mb-4">Who&apos;s Invited</div>
+            <h2 className="font-display text-4xl md:text-5xl font-medium leading-tight mb-16 max-w-3xl">
+              Bold B2B tech leaders ready to win in the U.S.
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
               {[
-                "Direct access to 30–50 decision-makers in a single evening",
-                "Introductions to U.S. market operators and growth partners",
-                "Off-the-record conversation you won&apos;t find on the conference floor",
-                "Curated insights from sponsor spotlights built for this audience",
-                "A seat at the table — not a spot in the crowd",
-                "Post-event connections with attendees who actually followed up",
+                {
+                  title: "CEOs & Founders",
+                  body: "$1M–$50M revenue B2B tech companies actively planning or executing U.S. market entry.",
+                },
+                {
+                  title: "Marketing Leaders",
+                  body: "CMOs and VPs driving pipeline, brand, and U.S. growth strategy at $10M–$400M ARR companies.",
+                },
+                {
+                  title: "GTM & Sales Leaders",
+                  body: "Revenue operators evaluating tools, partners, and playbooks to accelerate U.S. growth.",
+                },
+                {
+                  title: "VCs & Operating Partners",
+                  body: "Investors helping European portfolio companies break into the U.S. market.",
+                },
               ].map((item) => (
-                <div key={item} className="flex gap-3 items-start rounded-2xl border border-white/10 bg-white/5 p-5">
-                  <Check className="h-4 w-4 text-[#c8f135] flex-shrink-0 mt-0.5" />
-                  <span className="text-white/70 text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: item }} />
+                <div key={item.title} className="flex gap-4 rounded-2xl border border-white/10 bg-white/5 p-6">
+                  <div className="flex-shrink-0">
+                    <Users className="h-5 w-5 text-[#c8f135] mt-0.5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-white mb-1">{item.title}</h3>
+                    <p className="text-white/60 text-sm leading-relaxed">{item.body}</p>
+                  </div>
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* About Your Host */}
+        <section className="border-b border-white/10 py-20 md:py-28">
+          <div className="container max-w-4xl">
+            <div className="text-xs font-semibold uppercase tracking-widest text-[#c8f135] mb-4">About Your Host</div>
+            <h2 className="font-display text-4xl md:text-5xl font-medium leading-tight mb-8">
+              Tiffany Nwahiri
+            </h2>
+            <div className="space-y-5 text-lg text-white/60 leading-relaxed mb-10">
+              <p>
+                Tiffany is a B2B growth expert with 15+ years scaling SaaS and tech companies through data-driven marketing. She partners with CEOs and GTM leaders to build brands that drive revenue across FinTech, MedTech, MarTech, Blockchain, Web3, and AI.
+              </p>
+              <p>
+                As Founder &amp; CEO of 3rd + Taylor Agency, she helps leaders hit their revenue targets through strategic marketing and flawless execution.
+              </p>
+            </div>
+            <a
+              href="#rsvp-bottom"
+              className="inline-flex items-center gap-2 rounded-full bg-[#c8f135] px-6 py-3 text-sm font-semibold text-[#0d0d0d] hover:bg-[#d4f54a] transition-colors"
+            >
+              Reserve your seat →
+            </a>
           </div>
         </section>
 
         {/* Bottom RSVP Form */}
-        <section className="py-20 md:py-28">
+        <section id="rsvp-bottom" className="py-20 md:py-28">
           <div className="container max-w-3xl">
             <div className="text-xs font-semibold uppercase tracking-widest text-[#c8f135] mb-4 text-center">Request Your Seat</div>
             <h2 className="font-display text-4xl md:text-5xl font-medium leading-tight mb-4 text-center">
