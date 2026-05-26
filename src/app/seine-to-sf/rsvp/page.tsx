@@ -192,11 +192,11 @@ export default function SeineToSFRSVP() {
               {[
                 {
                   title: "CEOs & Founders",
-                  body: "$1M–$50M revenue B2B tech companies actively planning or executing U.S. market entry.",
+                  body: "$10M–$50M revenue B2B tech companies actively planning or executing U.S. market entry.",
                 },
                 {
                   title: "Marketing Leaders",
-                  body: "CMOs and VPs driving pipeline, brand, and U.S. growth strategy at $10M–$400M ARR companies.",
+                  body: "CMOs and VPs driving pipeline, brand, and U.S. growth strategy at $50M–$400M ARR companies.",
                 },
                 {
                   title: "GTM & Sales Leaders",
