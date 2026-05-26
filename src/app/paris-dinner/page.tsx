@@ -1,10 +1,31 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useRef, useId } from "react";
 import { MapPin, Calendar, Users, Star, Check } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
+
+const SCRIPT_SRC = "https://js.hsforms.net/forms/embed/44715546.js";
+const PORTAL_ID = "44715546";
+const FORM_ID = "355cd6f9-e80a-4f85-aab4-9146c924d40e";
+const REGION = "na1";
+
+const loadScript = (): Promise<void> =>
+  new Promise((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>(`script[src="${SCRIPT_SRC}"]`);
+    if (existing) {
+      if (existing.dataset.loaded === "true") return resolve();
+      existing.addEventListener("load", () => resolve());
+      existing.addEventListener("error", () => reject(new Error("HubSpot script failed")));
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = SCRIPT_SRC;
+    script.defer = true;
+    script.onload = () => { script.dataset.loaded = "true"; resolve(); };
+    script.onerror = () => reject(new Error("HubSpot script failed"));
+    document.body.appendChild(script);
+  });
 
 const tiers = [
   {
@@ -68,23 +89,24 @@ const audience = [
 ];
 
 const SponsorForm = () => {
-  useEffect(() => {
-    if (!document.querySelector('script[src="https://js.hsforms.net/forms/embed/44715546.js"]')) {
-      const script = document.createElement("script");
-      script.src = "https://js.hsforms.net/forms/embed/44715546.js";
-      script.defer = true;
-      document.head.appendChild(script);
-    }
-  }, []);
+  const instanceId = useId().replace(/:/g, "");
+  const ref = useRef<HTMLDivElement>(null);
 
-  return (
-    <div
-      className="hs-form-frame"
-      data-region="na1"
-      data-form-id="355cd6f9-e80a-4f85-aab4-9146c924d40e"
-      data-portal-id="44715546"
-    />
-  );
+  useEffect(() => {
+    if (!ref.current) return;
+    ref.current.innerHTML = "";
+    const formFrame = document.createElement("div");
+    formFrame.className = "hs-form-frame";
+    formFrame.dataset.region = REGION;
+    formFrame.dataset.formId = FORM_ID;
+    formFrame.dataset.portalId = PORTAL_ID;
+    formFrame.dataset.instanceId = `paris-sponsor-${instanceId}`;
+    ref.current.appendChild(formFrame);
+    loadScript().catch(() => undefined);
+    return () => { formFrame.remove(); };
+  }, [instanceId]);
+
+  return <div ref={ref} className="min-h-[400px]" />;
 };
 
 const SeineToSF = () => (
@@ -106,7 +128,7 @@ const SeineToSF = () => (
                 <em className="italic text-[#c8f135]">to San Francisco.</em>
               </h1>
               <p className="text-lg md:text-xl text-white/60 leading-relaxed mb-10 max-w-lg">
-                An exclusive dinner for 30–50 hand-picked B2B tech leaders during VivaTech Week in Paris — where Europe's most ambitious founders meet the people helping them break into the U.S.
+                An exclusive dinner for 30–50 hand-picked B2B tech leaders during VivaTech Week in Paris — where Europe&apos;s most ambitious founders meet the people helping them break into the U.S.
               </p>
               <div className="flex flex-wrap gap-6">
                 <div className="flex items-center gap-2 text-sm text-white/70">
@@ -129,7 +151,6 @@ const SeineToSF = () => (
             </div>
             <div className="flex justify-center lg:justify-end">
               <div className="relative w-72 h-72 md:w-80 md:h-80">
-                {/* Badge placeholder — replace src with seine-to-sf-badge.png once added to assets */}
                 <img
                   src="/seine-to-sf-badge.png"
                   alt="From the Seine to San Francisco — 3rd + Taylor"
@@ -147,7 +168,7 @@ const SeineToSF = () => (
         <div className="container max-w-4xl">
           <div className="text-xs font-semibold uppercase tracking-widest text-[#c8f135] mb-4">The Opportunity</div>
           <h2 className="font-display text-4xl md:text-5xl font-medium leading-tight mb-8">
-            This is not a trade show.<br />It's a seat at the table.
+            This is not a trade show.<br />It&apos;s a seat at the table.
           </h2>
           <p className="text-lg text-white/60 leading-relaxed mb-6">
             3rd + Taylor Agency is hosting its fourth exclusive dinner in Paris — its third during VivaTech Week — bringing together 30–50 hand-picked B2B tech leaders for an evening of conversation, curated insights, cocktails, and private dining.
@@ -207,7 +228,7 @@ const SeineToSF = () => (
         <div className="container">
           <div className="text-xs font-semibold uppercase tracking-widest text-[#c8f135] mb-4">Sponsorship Packages</div>
           <h2 className="font-display text-4xl md:text-5xl font-medium leading-tight mb-4">
-            Five sponsorships. That's it.
+            Five sponsorships. That&apos;s it.
           </h2>
           <p className="text-white/50 text-lg mb-16 max-w-2xl">
             Packages can be customized to align with your goals. Reach out to discuss the right fit.
@@ -253,12 +274,12 @@ const SeineToSF = () => (
         <div className="container max-w-3xl">
           <div className="text-xs font-semibold uppercase tracking-widest text-[#c8f135] mb-4 text-center">Reserve Your Spot</div>
           <h2 className="font-display text-4xl md:text-5xl font-medium leading-tight mb-4 text-center">
-            Let's build something together.
+            Let&apos;s build something together.
           </h2>
           <p className="text-white/50 text-lg mb-12 text-center">
             Complete the form below and Tiffany will follow up with the full sponsorship deck and next steps.
           </p>
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-10">
+          <div className="rounded-3xl overflow-hidden bg-white p-6 md:p-10">
             <SponsorForm />
           </div>
           <p className="mt-8 text-center text-sm text-white/40">
