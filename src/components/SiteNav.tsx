@@ -30,21 +30,21 @@ const whoWeServeMenu = [
   {
     heading: "By Role",
     links: [
-      { label: "CEOs & Founders", href: "/who-we-serve/ceos-founders" },
-      { label: "Marketing Leaders", href: "/who-we-serve/marketing-leaders" },
-      { label: "Sales Leaders", href: "/who-we-serve/sales-leaders" },
+      { label: "CEOs & Founders", href: "/who-we-serve/by-role#ceos" },
+      { label: "Marketing Leaders", href: "/who-we-serve/by-role#marketing" },
+      { label: "Sales Leaders", href: "/who-we-serve/by-role#sales" },
       { label: "VC Operating Partners", href: "/who-we-serve/vc-operating-partners" },
     ],
   },
   {
     heading: "By Company Type",
     links: [
-      { label: "B2B SaaS", href: "/who-we-serve/saas" },
-      { label: "B2B FinTech", href: "/who-we-serve/fintech" },
-      { label: "B2B MedTech", href: "/who-we-serve/medtech" },
-      { label: "B2B AI-Native Tech", href: "/who-we-serve/ai-native" },
-      { label: "Disruptive B2B Tech (Crypto, Blockchain, Web3)", href: "/who-we-serve/disruptive" },
-      { label: "Industrial Tech", href: "/who-we-serve/industrial" },
+      { label: "B2B SaaS", href: "/who-we-serve/by-industry#saas" },
+      { label: "B2B FinTech", href: "/who-we-serve/by-industry#fintech" },
+      { label: "B2B MedTech", href: "/who-we-serve/by-industry#medtech" },
+      { label: "B2B AI-Native Tech", href: "/who-we-serve/by-industry#ai-native" },
+      { label: "Disruptive B2B Tech (Crypto, Blockchain, Web3)", href: "/who-we-serve/by-industry#disruptive" },
+      { label: "Industrial Tech", href: "/who-we-serve/by-industry#industrial" },
     ],
   },
 ];
