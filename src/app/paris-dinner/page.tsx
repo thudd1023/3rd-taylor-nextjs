@@ -88,7 +88,7 @@ const audience = [
   },
 ];
 
-const SponsorForm = () => {
+const SponsorForm = ({ prefix }: { prefix: string }) => {
   const instanceId = useId().replace(/:/g, "");
   const ref = useRef<HTMLDivElement>(null);
 
@@ -100,11 +100,11 @@ const SponsorForm = () => {
     formFrame.dataset.region = REGION;
     formFrame.dataset.formId = FORM_ID;
     formFrame.dataset.portalId = PORTAL_ID;
-    formFrame.dataset.instanceId = `paris-sponsor-${instanceId}`;
+    formFrame.dataset.instanceId = `${prefix}-${instanceId}`;
     ref.current.appendChild(formFrame);
     loadScript().catch(() => undefined);
     return () => { formFrame.remove(); };
-  }, [instanceId]);
+  }, [instanceId, prefix]);
 
   return <div ref={ref} className="min-h-[400px]" />;
 };
@@ -118,7 +118,7 @@ const SeineToSF = () => (
       <section className="relative overflow-hidden border-b border-white/10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_#c8f135_0%,_transparent_50%)] opacity-10 pointer-events-none" />
         <div className="container pt-24 pb-20 md:pt-32 md:pb-28">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-16 items-start">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-white/60 mb-8">
                 Sponsorship Prospectus · June 2026
@@ -149,15 +149,16 @@ const SeineToSF = () => (
                 </div>
               </div>
             </div>
-            <div className="flex justify-center lg:justify-end">
-              <div className="relative w-72 h-72 md:w-80 md:h-80">
-                <img
-                  src="/seine-to-sf-badge.png"
-                  alt="From the Seine to San Francisco — 3rd + Taylor"
-                  className="w-full h-full object-contain drop-shadow-2xl"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                />
+
+            {/* Hero form card */}
+            <div className="rounded-3xl bg-white p-6 md:p-8 shadow-2xl">
+              <div className="text-xs font-semibold uppercase tracking-widest text-[#0d0d0d]/50 mb-2">
+                Sponsor Inquiry
               </div>
+              <h2 className="font-display text-2xl font-medium leading-tight mb-6 text-[#0d0d0d]">
+                Secure your sponsorship.
+              </h2>
+              <SponsorForm prefix="paris-hero" />
             </div>
           </div>
         </div>
@@ -269,7 +270,7 @@ const SeineToSF = () => (
         </div>
       </section>
 
-      {/* Form */}
+      {/* Bottom Form */}
       <section className="py-20 md:py-28">
         <div className="container max-w-3xl">
           <div className="text-xs font-semibold uppercase tracking-widest text-[#c8f135] mb-4 text-center">Reserve Your Spot</div>
@@ -280,7 +281,7 @@ const SeineToSF = () => (
             Complete the form below and Tiffany will follow up with the full sponsorship deck and next steps.
           </p>
           <div className="rounded-3xl overflow-hidden bg-white p-6 md:p-10">
-            <SponsorForm />
+            <SponsorForm prefix="paris-bottom" />
           </div>
           <p className="mt-8 text-center text-sm text-white/40">
             Questions? Email <a href="mailto:tiffany.nwahiri@3rdandtaylor.com" className="text-[#c8f135] hover:underline">tiffany.nwahiri@3rdandtaylor.com</a>
