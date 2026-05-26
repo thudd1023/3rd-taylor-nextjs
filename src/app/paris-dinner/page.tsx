@@ -20,6 +20,20 @@ const tiers = [
     ],
   },
   {
+    name: "Gold",
+    price: "$6,500",
+    available: "2 available",
+    featured: false,
+    benefits: [
+      "Everything in Silver, plus:",
+      "5-minute sponsor spotlight",
+      "Logo on day-of event signage and materials",
+      "2 VIP dinner seats",
+      "Full attendee list with contacts post-event",
+      "Exclusive promo offer to attendees",
+    ],
+  },
+  {
     name: "Platinum",
     price: "$10,000",
     available: "1 available",
@@ -34,20 +48,6 @@ const tiers = [
       "LinkedIn outreach window pre-event",
       "Full attendee list via email post-event",
       "Co-branded post-event recap",
-    ],
-  },
-  {
-    name: "Gold",
-    price: "$6,500",
-    available: "2 available",
-    featured: false,
-    benefits: [
-      "Everything in Silver, plus:",
-      "5-minute sponsor spotlight",
-      "Logo on day-of event signage and materials",
-      "2 VIP dinner seats",
-      "Full attendee list with contacts post-event",
-      "Exclusive promo offer to attendees",
     ],
   },
 ];
@@ -69,32 +69,20 @@ const audience = [
 
 const SponsorForm = () => {
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://link.msgsndr.com/js/form_embed.js";
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      if (document.body.contains(script)) document.body.removeChild(script);
-    };
+    if (!document.querySelector('script[src="https://js.hsforms.net/forms/embed/44715546.js"]')) {
+      const script = document.createElement("script");
+      script.src = "https://js.hsforms.net/forms/embed/44715546.js";
+      script.defer = true;
+      document.head.appendChild(script);
+    }
   }, []);
 
   return (
-    <iframe
-      src="https://api.leadconnectorhq.com/widget/form/Y5bMLTmJSNAz5e2x9u2J"
-      style={{ width: "100%", minHeight: "600px", border: "none", borderRadius: "12px" }}
-      id="inline-Y5bMLTmJSNAz5e2x9u2J"
-      data-layout='{"id":"INLINE"}'
-      data-trigger-type="alwaysShow"
-      data-trigger-value=""
-      data-activation-type="alwaysActivated"
-      data-activation-value=""
-      data-deactivation-type="neverDeactivate"
-      data-deactivation-value=""
-      data-form-name="Seine to San Francisco Sponsors"
-      data-height="undefined"
-      data-layout-iframe-id="inline-Y5bMLTmJSNAz5e2x9u2J"
-      data-form-id="Y5bMLTmJSNAz5e2x9u2J"
-      title="Seine to San Francisco Sponsors"
+    <div
+      className="hs-form-frame"
+      data-region="na1"
+      data-form-id="355cd6f9-e80a-4f85-aab4-9146c924d40e"
+      data-portal-id="44715546"
     />
   );
 };
