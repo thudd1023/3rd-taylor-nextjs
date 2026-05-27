@@ -33,6 +33,8 @@ export type ResourceFull = ResourceCard & {
   body?: unknown[];
   ctaLabel?: string;
   ctaUrl?: string;
+  flipbookUrl?: string;
+  hubspotFormId?: string;
   seoTitle?: string;
   seoDescription?: string;
   author?: { name: string; role?: string; image?: SanityImageSource };
