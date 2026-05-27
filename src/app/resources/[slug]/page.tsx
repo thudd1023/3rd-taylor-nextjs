@@ -87,11 +87,12 @@ const ResourceDetail = () => {
           {/* Flipbook embed */}
           <section className="bg-[#1a1a1a] py-8 md:py-12">
             <div className="container max-w-5xl">
-              <div className="rounded-2xl overflow-hidden shadow-2xl" style={{ aspectRatio: "16/9" }}>
+              <div className="rounded-2xl overflow-hidden shadow-2xl" style={{ position: "relative", paddingTop: "max(60%, 324px)", width: "100%", height: 0 }}>
                 <iframe
                   src={r.flipbookUrl}
-                  className="w-full h-full border-0"
+                  style={{ position: "absolute", border: "none", width: "100%", height: "100%", left: 0, top: 0 }}
                   allowFullScreen
+                  scrolling="no"
                   title={r.title}
                 />
               </div>
