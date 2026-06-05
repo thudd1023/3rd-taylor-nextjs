@@ -6,7 +6,6 @@ export const sanityClient: SanityClient = createClient({
   dataset: "production",
   apiVersion: "2024-01-01",
   useCdn: false,
-  fetchOptions: { cache: "no-store" },
 });
 
 const builder = imageUrlBuilder(sanityClient);
@@ -49,28 +48,33 @@ const cardProjection = `{
   "topics": topics[]->{ title, slug }
 }`;
 
+const noCache = { cache: "no-store" as const };
+
 export async function fetchResources(): Promise<ResourceCard[]> {
   return sanityClient.fetch(
     `*[_type == "resource" && draft != true] | order(publishedAt desc) ${cardProjection}`,
+    {},
+    noCache,
   );
 }
 
 export async function fetchResource(slug: string): Promise<ResourceFull | null> {
   return sanityClient.fetch(
     `*[_type == "resource" && slug.current == $slug && draft != true][0]{
-      ..., 
+      ...,
       "contentType": contentType->{ title, slug },
       "topics": topics[]->{ title, slug },
       "author": author->{ name, role, image }
     }`,
     { slug },
+    noCache,
   );
 }
 
 export async function fetchTaxonomies(): Promise<{ contentTypes: Taxonomy[]; topics: Taxonomy[] }> {
   const [contentTypes, topics] = await Promise.all([
-    sanityClient.fetch<Taxonomy[]>(`*[_type == "contentType"] | order(title asc) { _id, title, slug }`),
-    sanityClient.fetch<Taxonomy[]>(`*[_type == "topic"] | order(title asc) { _id, title, slug }`),
+    sanityClient.fetch<Taxonomy[]>(`*[_type == "contentType"] | order(title asc) { _id, title, slug }`, {}, noCache),
+    sanityClient.fetch<Taxonomy[]>(`*[_type == "topic"] | order(title asc) { _id, title, slug }`, {}, noCache),
   ]);
   const uniqueTopics = topics.filter((t, i, arr) => arr.findIndex((x) => x.slug.current === t.slug.current) === i);
   return { contentTypes, topics: uniqueTopics };
