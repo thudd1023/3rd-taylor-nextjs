@@ -68,6 +68,27 @@ export default async function ResourceDetail({ params }: Props) {
             </div>
           </section>
 
+          {/* Body copy */}
+          {r.body && (
+            <section className="border-b border-border py-12 md:py-16">
+              <div className="container max-w-3xl">
+                <div className="prose prose-lg max-w-none prose-headings:font-sans prose-headings:font-medium prose-a:text-accent">
+                  <PortableText
+                    value={r.body as never}
+                    components={{
+                      types: {
+                        image: ({ value }) =>
+                          value?.asset ? (
+                            <img src={urlFor(value).width(1000).url()} alt={value.alt || ""} className="rounded-xl my-6" />
+                          ) : null,
+                      },
+                    }}
+                  />
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* Flipbook embed */}
           <section className="bg-[#1a1a1a] py-8 md:py-12">
             <div className="container max-w-5xl">
@@ -106,21 +127,6 @@ export default async function ResourceDetail({ params }: Props) {
                 )}
               </div>
 
-              {r.body && (
-                <div className="mt-12 prose prose-lg max-w-none prose-headings:font-sans prose-headings:font-medium prose-a:text-accent">
-                  <PortableText
-                    value={r.body as never}
-                    components={{
-                      types: {
-                        image: ({ value }) =>
-                          value?.asset ? (
-                            <img src={urlFor(value).width(1000).url()} alt={value.alt || ""} className="rounded-xl my-6" />
-                          ) : null,
-                      },
-                    }}
-                  />
-                </div>
-              )}
             </div>
           </section>
         </div>
