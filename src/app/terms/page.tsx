@@ -44,7 +44,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-xl font-semibold text-ink mb-3">4. Intellectual Property</h2>
               <p>All content on this website — including text, graphics, logos, frameworks, methodologies, and code — is the property of 3rd + Taylor and is protected by applicable intellectual property laws. You may not reproduce, distribute, or create derivative works from our content without prior written permission.</p>
-              <p className="mt-3">Deliverables created for clients under a paid engagement are licensed to the client for their business use upon receipt of full payment, as outlined in the applicable service agreement.</p>
+              <p className="mt-3">Work product created by 3rd + Taylor on behalf of a client — including but not limited to strategies, copy, creative assets, campaigns, and deliverables — becomes the sole property of the client upon receipt of full payment. Prior to full payment, all work product remains the intellectual property of 3rd + Taylor. Ownership transfer is contingent on payment in full as outlined in the applicable proposal or Statement of Work.</p>
             </section>
 
             <section>
@@ -95,7 +95,7 @@ export default function TermsPage() {
 
             <section>
               <h2 className="text-xl font-semibold text-ink mb-3">13. Contact</h2>
-              <p>For questions about these Terms & Conditions, contact us at <a href="mailto:hello@3rdandtaylor.com" className="text-accent underline">hello@3rdandtaylor.com</a>.</p>
+              <p>For questions about these Terms & Conditions, contact us at <a href="mailto:legal@3rdandtaylor.com" className="text-accent underline">legal@3rdandtaylor.com</a>.</p>
             </section>
 
           </div>
