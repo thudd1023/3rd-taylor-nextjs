@@ -26,7 +26,8 @@ const initialForm = {
 const inputCls =
   "w-full bg-white/8 border border-white/15 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-[#c8f135]/60 transition-colors";
 const labelCls = "block text-xs font-semibold uppercase tracking-wider text-white/60 mb-1.5";
-const selectCls = `${inputCls} appearance-none cursor-pointer`;
+const selectCls = "w-full border border-white/15 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#c8f135]/60 transition-colors appearance-none cursor-pointer";
+const selectStyle = { backgroundColor: "#1c1c1c", color: "#ffffff" };
 
 function RegistrationForm() {
   const [form, setForm] = useState(initialForm);
@@ -89,11 +90,11 @@ function RegistrationForm() {
       <div>
         <label className={labelCls}>Role *</label>
         <div className="relative">
-          <select name="role" value={form.role} onChange={handleChange} required className={selectCls}>
-            <option value="" disabled>Select your role…</option>
-            <option value="Executive Leadership">Executive Leadership</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Operating Partner (VCs and Investors)">Operating Partner (VCs and Investors)</option>
+          <select name="role" value={form.role} onChange={handleChange} required className={selectCls} style={selectStyle}>
+            <option value="" disabled style={selectStyle}>Select your role…</option>
+            <option value="Executive Leadership" style={selectStyle}>Executive Leadership</option>
+            <option value="Marketing" style={selectStyle}>Marketing</option>
+            <option value="Operating Partner (VCs and Investors)" style={selectStyle}>Operating Partner (VCs and Investors)</option>
           </select>
           <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/35 pointer-events-none" />
         </div>
@@ -102,13 +103,13 @@ function RegistrationForm() {
       <div>
         <label className={labelCls}>Seniority *</label>
         <div className="relative">
-          <select name="seniority" value={form.seniority} onChange={handleChange} required className={selectCls}>
-            <option value="" disabled>Select your level…</option>
-            <option value="C-suite">C-suite</option>
-            <option value="Founder">Founder</option>
-            <option value="VP">VP</option>
-            <option value="Manager">Manager</option>
-            <option value="Individual Contributor">Individual Contributor</option>
+          <select name="seniority" value={form.seniority} onChange={handleChange} required className={selectCls} style={selectStyle}>
+            <option value="" disabled style={selectStyle}>Select your level…</option>
+            <option value="C-suite" style={selectStyle}>C-suite</option>
+            <option value="Founder" style={selectStyle}>Founder</option>
+            <option value="VP" style={selectStyle}>VP</option>
+            <option value="Manager" style={selectStyle}>Manager</option>
+            <option value="Individual Contributor" style={selectStyle}>Individual Contributor</option>
           </select>
           <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/35 pointer-events-none" />
         </div>
