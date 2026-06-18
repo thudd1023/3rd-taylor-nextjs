@@ -390,7 +390,7 @@ export default function RevenueTableMiami() {
                 House Rules
               </div>
               <p className="text-white/80 leading-relaxed text-sm md:text-base">
-                The conversation comes first — always. Sponsors are vetted, introduced, and given structured time to share who they are, who they serve, and the results they deliver. Guests are here to connect and exchange, not to be sold to from the floor. Everyone in the room knows why they're here. We just keep it honest. What happens at the table stays useful — not just memorable.
+                The conversation comes first — always. Sponsors are vetted, introduced, and given structured time to share who they are, who they serve, and the results they deliver. Guests are here to connect and exchange, not to be sold to from the floor.
               </p>
             </div>
           </div>
