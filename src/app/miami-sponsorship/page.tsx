@@ -102,7 +102,8 @@ const schedule = [
 ];
 
 const inputCls =
-  "w-full bg-white/8 border border-white/15 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-[#c8f135]/60 transition-colors";
+  "w-full border border-white/15 rounded-xl px-4 py-3 text-sm placeholder:text-white/35 focus:outline-none focus:border-[#c8f135]/60 transition-colors";
+const inputStyle = { backgroundColor: "#1c1c1c", color: "#ffffff" };
 const labelCls = "block text-xs font-semibold uppercase tracking-wider text-white/60 mb-1.5";
 const selectStyle = { backgroundColor: "#1c1c1c", color: "#ffffff" };
 const selectCls =
@@ -157,30 +158,30 @@ function SponsorForm() {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className={labelCls}>First Name *</label>
-          <input name="firstName" value={form.firstName} onChange={handleChange} required placeholder="Jane" className={inputCls} />
+          <input name="firstName" value={form.firstName} onChange={handleChange} required placeholder="Jane" className={inputCls} style={inputStyle} />
         </div>
         <div>
           <label className={labelCls}>Last Name *</label>
-          <input name="lastName" value={form.lastName} onChange={handleChange} required placeholder="Smith" className={inputCls} />
+          <input name="lastName" value={form.lastName} onChange={handleChange} required placeholder="Smith" className={inputCls} style={inputStyle} />
         </div>
       </div>
       <div>
         <label className={labelCls}>Title *</label>
-        <input name="title" value={form.title} onChange={handleChange} required placeholder="VP of Marketing" className={inputCls} />
+        <input name="title" value={form.title} onChange={handleChange} required placeholder="VP of Marketing" className={inputCls} style={inputStyle} />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className={labelCls}>Company *</label>
-          <input name="company" value={form.company} onChange={handleChange} required placeholder="Acme Inc." className={inputCls} />
+          <input name="company" value={form.company} onChange={handleChange} required placeholder="Acme Inc." className={inputCls} style={inputStyle} />
         </div>
         <div>
           <label className={labelCls}>Company Website *</label>
-          <input name="website" value={form.website} onChange={handleChange} required placeholder="acme.com" className={inputCls} />
+          <input name="website" value={form.website} onChange={handleChange} required placeholder="acme.com" className={inputCls} style={inputStyle} />
         </div>
       </div>
       <div>
         <label className={labelCls}>Work Email *</label>
-        <input name="email" type="email" value={form.email} onChange={handleChange} required placeholder="jane@company.com" className={inputCls} />
+        <input name="email" type="email" value={form.email} onChange={handleChange} required placeholder="jane@company.com" className={inputCls} style={inputStyle} />
       </div>
       <div>
         <label className={labelCls}>Sponsorship Tier of Interest *</label>
