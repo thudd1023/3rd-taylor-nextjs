@@ -145,10 +145,10 @@ const SiteNav = () => {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Link href="/free-gtm-scan" className="hidden sm:inline-flex items-center gap-1.5 border border-ink/20 text-ink text-sm font-semibold px-4 py-2 rounded-full hover:bg-ink hover:text-cream transition-colors">
+          <Link href="/free-gtm-scan" className="inline-flex items-center gap-1.5 border border-ink/20 text-ink text-sm font-semibold px-4 py-2 rounded-full hover:bg-ink hover:text-cream transition-colors">
             Free GTM Scan
           </Link>
-          <Link href="/lets-talk" className="inline-flex items-center gap-1.5 bg-ink text-cream text-sm font-semibold px-4 py-2 rounded-full hover:bg-accent transition-colors">
+          <Link href="/lets-talk" className="hidden sm:inline-flex items-center gap-1.5 bg-ink text-cream text-sm font-semibold px-4 py-2 rounded-full hover:bg-accent transition-colors">
             Let's Talk <ArrowRight className="h-3.5 w-3.5" />
           </Link>
           <button className="xl:hidden p-2 -mr-2" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
