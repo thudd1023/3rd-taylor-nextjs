@@ -226,7 +226,7 @@ export default function RevenueTableMiami() {
               {/* Left */}
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-white/70 mb-8">
-                  August 20, 2026 · Miami, FL · Invite Only
+                  August 13, 2026 · Miami, FL · Invite Only
                 </div>
                 <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-medium italic leading-[0.93] mb-6">
                   The Revenue<br />Table.
@@ -237,7 +237,7 @@ export default function RevenueTableMiami() {
                 <div className="flex flex-wrap gap-5 mb-10">
                   <div className="flex items-center gap-2 text-sm text-white/75">
                     <Calendar className="h-4 w-4" style={{ color: LIME }} />
-                    August 20, 2026
+                    August 13, 2026
                   </div>
                   <div className="flex items-center gap-2 text-sm text-white/75">
                     <MapPin className="h-4 w-4" style={{ color: LIME }} />
@@ -419,7 +419,7 @@ export default function RevenueTableMiami() {
               </div>
               <div className="flex items-center gap-2 text-sm text-white/75">
                 <Calendar className="h-4 w-4" style={{ color: LIME }} />
-                August 20, 2026
+                August 13, 2026
               </div>
               <div className="text-sm text-white/50">
                 Evening — venue details shared with confirmed guests

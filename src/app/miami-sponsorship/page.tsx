@@ -230,7 +230,7 @@ export default function MiamiSponsorship() {
               {/* Left */}
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-white/70 mb-8">
-                  Sponsorship Prospectus · Miami · August 20, 2026
+                  Sponsorship Prospectus · Miami · August 13, 2026
                 </div>
                 <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-medium leading-[0.93] mb-6">
                   The Revenue<br />
@@ -242,7 +242,7 @@ export default function MiamiSponsorship() {
                 <div className="flex flex-wrap gap-5 mb-10">
                   <div className="flex items-center gap-2 text-sm text-white/75">
                     <Calendar className="h-4 w-4" style={{ color: LIME }} />
-                    August 20, 2026
+                    August 13, 2026
                   </div>
                   <div className="flex items-center gap-2 text-sm text-white/75">
                     <MapPin className="h-4 w-4" style={{ color: LIME }} />
@@ -257,15 +257,6 @@ export default function MiamiSponsorship() {
                     5th Edition
                   </div>
                 </div>
-                <Link
-                  href={PROSPECTUS_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-semibold underline underline-offset-2 hover:opacity-80 transition-opacity"
-                  style={{ color: LIME }}
-                >
-                  View the full prospectus <ArrowRight className="h-4 w-4" />
-                </Link>
               </div>
 
               {/* Right: form */}
@@ -274,10 +265,10 @@ export default function MiamiSponsorship() {
                   Sponsor Inquiry
                 </div>
                 <h2 className="font-display text-2xl font-medium leading-tight mb-2 text-white">
-                  Secure your sponsorship.
+                  Express your interest and get the full prospectus.
                 </h2>
                 <p className="text-sm text-white/60 mb-6">
-                  Packages are first-come, first-served. The Table Architect tier is exclusive — only one available.
+                  Complete the form to share your interest and we'll send you the complete sponsorship prospectus — including package details, audience breakdown, and pricing. Packages are limited and filled first-come, first-served.
                 </p>
                 <SponsorForm />
               </div>
@@ -296,7 +287,7 @@ export default function MiamiSponsorship() {
               This is not a trade show.<br />It's a seat at the table.
             </h2>
             <p className="text-lg text-white/80 leading-relaxed mb-5">
-              3rd + Taylor is hosting its 5th exclusive dinner — and first US event — in Miami on August 20. After events in Barcelona, London, and Paris, we're bringing The Revenue Table to America, inviting 30–40 hand-picked B2B tech leaders for an evening of conversation, cocktails, and private dining at Giselle.
+              3rd + Taylor is hosting its 5th exclusive dinner — and first US event — in Miami on August 13. After events in Barcelona, London, and Paris, we're bringing The Revenue Table to America, inviting 30–40 hand-picked B2B tech leaders for an evening of conversation, cocktails, and private dining at Giselle.
             </p>
             <p className="text-lg text-white/80 leading-relaxed mb-12">
               Sponsors don't stand outside the experience. They become part of it — with dedicated time to present, direct access to attendees, and the kind of introductions that don't happen at booths.
@@ -385,7 +376,7 @@ export default function MiamiSponsorship() {
               The Evening
             </div>
             <h2 className="font-display text-4xl md:text-5xl font-medium leading-tight mb-4">
-              August 20 at Giselle, Miami.
+              August 13 at Giselle, Miami.
             </h2>
             <p className="text-lg text-white/80 leading-relaxed mb-12">
               A rooftop venue in downtown Miami with private dining rooms, panoramic skyline views, and a menu blending French, Mediterranean, and Asian cuisine.
