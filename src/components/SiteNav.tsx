@@ -145,8 +145,8 @@ const SiteNav = () => {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Link href="/free-gtm-scan" className="inline-flex items-center gap-1.5 border border-ink/20 text-ink text-sm font-semibold px-4 py-2 rounded-full hover:bg-ink hover:text-cream transition-colors">
-            Free GTM Scan
+          <Link href="/free-gtm-scan" className="inline-flex items-center gap-1.5 bg-ink text-cream sm:bg-transparent sm:border sm:border-ink/20 sm:text-ink text-sm font-semibold px-4 py-2 rounded-full hover:bg-accent sm:hover:bg-ink sm:hover:text-cream transition-colors">
+            Free GTM Scan <ArrowRight className="h-3.5 w-3.5 sm:hidden" />
           </Link>
           <Link href="/lets-talk" className="hidden sm:inline-flex items-center gap-1.5 bg-ink text-cream text-sm font-semibold px-4 py-2 rounded-full hover:bg-accent transition-colors">
             Let's Talk <ArrowRight className="h-3.5 w-3.5" />
