@@ -66,10 +66,6 @@ const SiteFooter = () => (
           <Link href="/lets-talk" className="mt-6 inline-flex items-center gap-1.5 bg-warm text-ink px-4 py-2 rounded-full text-sm font-semibold hover:bg-cream transition-colors">
             Let's Talk <ArrowRight className="h-3.5 w-3.5" />
           </Link>
-          <address className="mt-6 not-italic text-cream/45 text-xs leading-relaxed">
-            13499 Biscayne Blvd, Suite 107<br />
-            North Miami, FL 33181
-          </address>
         </div>
         <Col title="Company" items={company} />
         <Col title="Solutions" items={solutions} />
@@ -103,6 +99,9 @@ const SiteFooter = () => (
           <Link href="/sitemap" className="hover:text-cream/70">Sitemap</Link>
         </div>
       </div>
+      <address className="mt-4 not-italic text-xs text-cream/30">
+        13499 Biscayne Blvd, Suite 107 · North Miami, FL 33181
+      </address>
     </div>
   </footer>
 );

@@ -32,7 +32,7 @@ const Hero = () => (
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
-        <p className="mt-6 text-sm text-muted-foreground">Now booking Campaign Engine builds for July 2026.</p>
+        <p className="mt-6 text-sm text-muted-foreground">Now booking Campaign Engine builds for August 2026.</p>
       </div>
     </div>
   </section>
