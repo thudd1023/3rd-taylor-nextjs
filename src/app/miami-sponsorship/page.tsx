@@ -18,7 +18,7 @@ const tiers = [
     id: "Conversation Starter",
     label: "Tier 01",
     name: "Conversation Starter",
-    price: "$2,000",
+    price: "$2,500",
     available: "3 available",
     featured: false,
     description:
@@ -188,7 +188,7 @@ function SponsorForm() {
         <div className="relative">
           <select name="tierInterest" value={form.tierInterest} onChange={handleChange} required className={selectCls} style={selectStyle}>
             <option value="" disabled style={selectStyle}>Select a tier…</option>
-            <option value="Conversation Starter — $2,000" style={selectStyle}>Conversation Starter — $2,000</option>
+            <option value="Conversation Starter — $2,500" style={selectStyle}>Conversation Starter — $2,500</option>
             <option value="Seat at the Table — $4,500" style={selectStyle}>Seat at the Table — $4,500</option>
             <option value="Table Architect — $10,000 (Presenting Sponsor)" style={selectStyle}>Table Architect — $10,000 (Presenting Sponsor)</option>
             <option value="Not sure yet — send me the prospectus" style={selectStyle}>Not sure yet — send me the prospectus</option>
