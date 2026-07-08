@@ -34,6 +34,7 @@ export type ResourceFull = ResourceCard & {
   ctaLabel?: string;
   ctaUrl?: string;
   flipbookUrl?: string;
+  downloadUrl?: string;
   hubspotFormId?: string;
   seoTitle?: string;
   seoDescription?: string;

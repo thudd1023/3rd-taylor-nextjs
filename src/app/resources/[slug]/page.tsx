@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight, Mail, BookOpen } from "lucide-react";
 import { PortableText } from "@portabletext/react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
-import HubSpotInlineForm from "@/components/HubSpotInlineForm";
+import ResourceEmailForm from "@/components/ResourceEmailForm";
 import { fetchResource, urlFor } from "@/lib/sanity";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -120,10 +120,10 @@ export default async function ResourceDetail({ params }: Props) {
                 <p className="text-muted-foreground mb-8">
                   Fill out the form below and we&apos;ll email you a copy of <strong>{r.title}</strong> — free.
                 </p>
-                {r.hubspotFormId ? (
-                  <HubSpotInlineForm formId={r.hubspotFormId} instancePrefix="guide-email" />
+                {r.downloadUrl ? (
+                  <ResourceEmailForm resourceSlug={r.slug.current} resourceTitle={r.title} />
                 ) : (
-                  <p className="text-sm text-muted-foreground italic">Email delivery form coming soon.</p>
+                  <p className="text-sm text-muted-foreground italic">Email delivery coming soon.</p>
                 )}
               </div>
 
