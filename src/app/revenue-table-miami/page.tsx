@@ -20,6 +20,7 @@ const initialForm = {
   seniority: "",
   company: "",
   website: "",
+  revenue: "",
   agreedToReview: false,
 };
 
@@ -123,6 +124,19 @@ function RegistrationForm() {
         <div>
           <label className={labelCls}>Company Website *</label>
           <input name="website" value={form.website} onChange={handleChange} required placeholder="acme.com" className={inputCls} />
+        </div>
+      </div>
+
+      <div>
+        <label className={labelCls}>Annual Company Revenue *</label>
+        <div className="relative">
+          <select name="revenue" value={form.revenue} onChange={handleChange} required className={selectCls} style={selectStyle}>
+            <option value="" disabled style={selectStyle}>Select a range…</option>
+            <option value="$1M-$10M" style={selectStyle}>$1M-$10M</option>
+            <option value="$11M-$40M" style={selectStyle}>$11M-$40M</option>
+            <option value="$40M+" style={selectStyle}>$40M+</option>
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/35 pointer-events-none" />
         </div>
       </div>
 

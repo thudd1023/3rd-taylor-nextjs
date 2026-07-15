@@ -21,10 +21,10 @@ const SubmissionThankYou = () => (
             Thank you!
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-4">
-            Your registration is confirmed.
+            Your request has been received.
           </p>
           <p className="text-base text-muted-foreground mb-12">
-            A confirmation email with details is on its way to your inbox. Check your spam folder if you don&apos;t see it within a few minutes.
+            We&apos;ll review your submission and respond with a confirmation or next steps within 1 business day.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
