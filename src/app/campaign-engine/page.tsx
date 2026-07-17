@@ -197,14 +197,14 @@ const WarmTLC = () => {
       n: "02",
       title: "Drive Intentional Traffic",
       sub: "Focus on attracting the right buyers, not just increasing volume.",
-      points: ["Early-signal-based targeting", "Paid and organic distribution", "Landing pages aligned to buyer stage"],
+      points: ["Signal-led audiences: funding, hiring, expansion — the triggers of tomorrow's pain point", "Repeat engagement without a form in the way", "Landing pages aligned to buyer stage"],
       mindset: "This is relevant. I want to learn more.",
     },
     {
       n: "03",
       title: "Build Qualified Leads",
-      sub: "Turn engagement into real buying signals.",
-      points: ["Nurture sequences that pre-educate buyers", "Retargeting", "Content that builds credibility and trust"],
+      sub: "Turn contacts into engaged leads.",
+      points: ["Non-linear nurtures — buyers choose their path, the journey adapts", "Retargeting that compounds", "Turn the right engagement into real intent"],
       mindset: "This is helpful. I trust them.",
     },
     {
