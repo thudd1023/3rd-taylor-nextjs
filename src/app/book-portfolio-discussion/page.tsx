@@ -1,33 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
 import { Briefcase, Check } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
-
-const HUBSPOT_SCRIPT_ID = "hs-form-embed-script";
-
-const HubSpotForm = () => {
-  useEffect(() => {
-    if (!document.getElementById(HUBSPOT_SCRIPT_ID)) {
-      const script = document.createElement("script");
-      script.id = HUBSPOT_SCRIPT_ID;
-      script.src = "https://js.hsforms.net/forms/embed/44715546.js";
-      script.defer = true;
-      document.body.appendChild(script);
-    }
-  }, []);
-
-  return (
-    <div
-      className="hs-form-frame"
-      data-region="na1"
-      data-form-id="72176405-a45a-466b-bf96-7809a651a98c"
-      data-portal-id="44715546"
-    />
-  );
-};
+import LetsTalkForm from "@/components/LetsTalkForm";
 
 const Hero = () => (
   <section className="relative overflow-hidden bg-gradient-sunset grain">
@@ -68,7 +45,7 @@ const FormSection = () => (
       </div>
       <div className="lg:col-span-7">
         <div className="rounded-3xl border border-border bg-cream p-6 md:p-8 shadow-sm">
-          <HubSpotForm />
+          <LetsTalkForm source="book-portfolio-discussion" />
         </div>
       </div>
     </div>

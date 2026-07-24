@@ -1,53 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useId } from "react";
 import { Wine, Sparkles, UtensilsCrossed, Users } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
+import LetsTalkForm from "@/components/LetsTalkForm";
 
-const SCRIPT_SRC = "https://js.hsforms.net/forms/embed/44715546.js";
-const PORTAL_ID = "44715546";
-const FORM_ID = "d554838d-a71c-4143-af41-019380870ce3";
-const REGION = "na1";
-
-const loadScript = (): Promise<void> =>
-  new Promise((resolve, reject) => {
-    const existing = document.querySelector<HTMLScriptElement>(`script[src="${SCRIPT_SRC}"]`);
-    if (existing) {
-      if (existing.dataset.loaded === "true") return resolve();
-      existing.addEventListener("load", () => resolve());
-      existing.addEventListener("error", () => reject(new Error("HubSpot script failed")));
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = SCRIPT_SRC;
-    script.defer = true;
-    script.onload = () => { script.dataset.loaded = "true"; resolve(); };
-    script.onerror = () => reject(new Error("HubSpot script failed"));
-    document.body.appendChild(script);
-  });
-
-const RSVPForm = ({ prefix }: { prefix: string }) => {
-  const instanceId = useId().replace(/:/g, "");
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!ref.current) return;
-    ref.current.innerHTML = "";
-    const formFrame = document.createElement("div");
-    formFrame.className = "hs-form-frame";
-    formFrame.dataset.region = REGION;
-    formFrame.dataset.formId = FORM_ID;
-    formFrame.dataset.portalId = PORTAL_ID;
-    formFrame.dataset.instanceId = `${prefix}-${instanceId}`;
-    ref.current.appendChild(formFrame);
-    loadScript().catch(() => undefined);
-    return () => { formFrame.remove(); };
-  }, [instanceId, prefix]);
-
-  return <div ref={ref} className="min-h-[500px]" />;
-};
+const RSVPForm = ({ prefix: _ }: { prefix: string }) => (
+  <LetsTalkForm source="seine-to-sf-rsvp" />
+);
 
 export default function SeineToSFRSVP() {
   return (

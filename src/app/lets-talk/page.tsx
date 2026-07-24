@@ -4,9 +4,11 @@ import Link from "next/link";
 import { MessageCircle, Check, Clock, Target, Sparkles } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
-import HubSpotLetsTalkForm from "@/components/HubSpotLetsTalkForm";
+import LetsTalkForm from "@/components/LetsTalkForm";
 
-const HubSpotForm = ({ instanceKey: _ }: { instanceKey: string }) => <HubSpotLetsTalkForm />;
+const HubSpotForm = ({ instanceKey }: { instanceKey: string }) => (
+  <LetsTalkForm source={`lets-talk-${instanceKey}`} />
+);
 
 const Hero = () => (
   <section className="relative overflow-hidden bg-gradient-sunset grain">

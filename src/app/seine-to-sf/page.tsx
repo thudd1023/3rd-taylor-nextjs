@@ -1,31 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useId } from "react";
 import { MapPin, Calendar, Users, Star, Check } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
-
-const SCRIPT_SRC = "https://js.hsforms.net/forms/embed/44715546.js";
-const PORTAL_ID = "44715546";
-const FORM_ID = "355cd6f9-e80a-4f85-aab4-9146c924d40e";
-const REGION = "na1";
-
-const loadScript = (): Promise<void> =>
-  new Promise((resolve, reject) => {
-    const existing = document.querySelector<HTMLScriptElement>(`script[src="${SCRIPT_SRC}"]`);
-    if (existing) {
-      if (existing.dataset.loaded === "true") return resolve();
-      existing.addEventListener("load", () => resolve());
-      existing.addEventListener("error", () => reject(new Error("HubSpot script failed")));
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = SCRIPT_SRC;
-    script.defer = true;
-    script.onload = () => { script.dataset.loaded = "true"; resolve(); };
-    script.onerror = () => reject(new Error("HubSpot script failed"));
-    document.body.appendChild(script);
-  });
+import LetsTalkForm from "@/components/LetsTalkForm";
 
 const tiers = [
   {
@@ -88,26 +66,9 @@ const audience = [
   },
 ];
 
-const SponsorForm = ({ prefix }: { prefix: string }) => {
-  const instanceId = useId().replace(/:/g, "");
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!ref.current) return;
-    ref.current.innerHTML = "";
-    const formFrame = document.createElement("div");
-    formFrame.className = "hs-form-frame";
-    formFrame.dataset.region = REGION;
-    formFrame.dataset.formId = FORM_ID;
-    formFrame.dataset.portalId = PORTAL_ID;
-    formFrame.dataset.instanceId = `${prefix}-${instanceId}`;
-    ref.current.appendChild(formFrame);
-    loadScript().catch(() => undefined);
-    return () => { formFrame.remove(); };
-  }, [instanceId, prefix]);
-
-  return <div ref={ref} className="min-h-[400px]" />;
-};
+const SponsorForm = ({ prefix: _ }: { prefix: string }) => (
+  <LetsTalkForm source="seine-to-sf-sponsor" />
+);
 
 const SeineToSF = () => (
   <>

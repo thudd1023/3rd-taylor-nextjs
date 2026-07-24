@@ -26,6 +26,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${manrope.className} ${bricolage.variable}`}>
       <head>
+        {/* GHL External Form Tracking — auto-captures native form submissions */}
+        {/* Confirm the exact script src from GHL: Settings → Tracking Scripts */}
+        <Script
+          id="ghl-tracking"
+          src="https://cdn.leadconnectorhq.com/loader.js"
+          data-resources-url="https://cdn.leadconnectorhq.com/loader.js"
+          data-location-id="g5Zvn5MGlJX8DOVSpLCI"
+          strategy="afterInteractive"
+        />
         <Script
           id="gtm-script"
           strategy="afterInteractive"

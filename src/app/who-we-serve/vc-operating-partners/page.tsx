@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
 import { ArrowRight, Check, Briefcase, TrendingUp, Building2, Users, Gauge, Target, Layers, Sparkles, AlertTriangle, ShieldCheck, Rocket, LineChart, HelpCircle } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
@@ -11,28 +10,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-
-const HUBSPOT_SCRIPT_ID = "hs-form-embed-script";
-
-const PortfolioDiscussionForm = () => {
-  useEffect(() => {
-    if (!document.getElementById(HUBSPOT_SCRIPT_ID)) {
-      const script = document.createElement("script");
-      script.id = HUBSPOT_SCRIPT_ID;
-      script.src = "https://js.hsforms.net/forms/embed/44715546.js";
-      script.defer = true;
-      document.body.appendChild(script);
-    }
-  }, []);
-  return (
-    <div
-      className="hs-form-frame"
-      data-region="na1"
-      data-form-id="72176405-a45a-466b-bf96-7809a651a98c"
-      data-portal-id="44715546"
-    />
-  );
-};
+import LetsTalkForm from "@/components/LetsTalkForm";
 
 const Hero = () => (
   <section className="relative overflow-hidden bg-gradient-sunset grain">
@@ -536,7 +514,7 @@ const FinalCTA = () => (
           </p>
         </div>
         <div className="bg-cream rounded-3xl p-6 md:p-8 shadow-bold text-ink">
-          <PortfolioDiscussionForm />
+          <LetsTalkForm source="vc-operating-partners" />
         </div>
       </div>
     </div>

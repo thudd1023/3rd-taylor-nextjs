@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Check, Search, Users, BarChart3, Target, FileText, Map, Sparkles, ShieldCheck } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
-import HubSpotLetsTalkForm from "@/components/HubSpotLetsTalkForm";
+import LetsTalkForm from "@/components/LetsTalkForm";
 
 const Hero = () => (
   <section className="relative overflow-hidden bg-gradient-sunset grain">
@@ -215,7 +215,7 @@ const FinalCTA = () => (
             Tell us a bit about where you are today and we'll set up a discovery call to scope the audit.
           </p>
         </div>
-        <div className="rounded-3xl bg-cream p-6 md:p-8 text-ink"><HubSpotLetsTalkForm /></div>
+        <div className="rounded-3xl bg-cream p-6 md:p-8 text-ink"><LetsTalkForm source="solutions-diagnose-growth-gaps" /></div>
       </div>
     </div>
   </section>

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Check, Send, Share2 as Linkedin, Mail, Sparkles, Cpu, Database, Radar, MessageSquare, Layers, Zap, AlertTriangle } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
-import HubSpotLetsTalkForm from "@/components/HubSpotLetsTalkForm";
+import LetsTalkForm from "@/components/LetsTalkForm";
 
 const Hero = () => (
   <section className="relative overflow-hidden bg-gradient-sunset grain">
@@ -236,7 +236,7 @@ const FinalCTA = () => (
             </Link>
           </p>
         </div>
-        <div className="rounded-3xl bg-cream p-6 md:p-8 text-ink"><HubSpotLetsTalkForm /></div>
+        <div className="rounded-3xl bg-cream p-6 md:p-8 text-ink"><LetsTalkForm source="solutions-outbound" /></div>
       </div>
     </div>
   </section>
