@@ -7,7 +7,10 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
 );
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy: only instantiate at request time so the build doesn't fail without the key
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY!);
+}
 
 async function addToGHL(contact: {
   firstName: string;
@@ -103,7 +106,7 @@ export async function POST(request: NextRequest) {
 
     ...(process.env.RESEND_API_KEY && !process.env.RESEND_API_KEY.startsWith("re_REPLACE")
       ? [
-          resend.emails.send({
+          getResend().emails.send({
             from: "3rd & Taylor <tiffany.nwahiri@results.3rdandtaylor.com>",
             to: ["tiffany.nwahiri@3rdandtaylor.com"],
             subject: `New inquiry — ${fullName} (${source})`,
@@ -119,7 +122,7 @@ export async function POST(request: NextRequest) {
               </table>
             `,
           }),
-          resend.emails.send({
+          getResend().emails.send({
             from: "Tiffany at 3rd & Taylor <tiffany.nwahiri@results.3rdandtaylor.com>",
             to: [email],
             subject: "Got your note — talk soon!",
