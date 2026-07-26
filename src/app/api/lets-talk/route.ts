@@ -9,6 +9,36 @@ const supabase = createClient(
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+async function addToGHL(contact: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  companyName: string;
+  source: string;
+}) {
+  const res = await fetch("https://rest.gohighlevel.com/v1/contacts/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.GHL_API_KEY}`,
+    },
+    body: JSON.stringify({
+      locationId: process.env.GHL_LOCATION_ID,
+      email: contact.email,
+      firstName: contact.firstName,
+      lastName: contact.lastName,
+      companyName: contact.companyName,
+      tags: ["website-lead", contact.source],
+      source: "Website Form",
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    console.error("[lets-talk] GHL error:", res.status, body);
+  }
+}
+
 export async function POST(request: NextRequest) {
   const base = new URL(request.url).origin;
   const formData = await request.formData();
@@ -24,63 +54,55 @@ export async function POST(request: NextRequest) {
     return NextResponse.redirect(`${base}/submission-thank-you?status=error`, 303);
   }
 
-  // Split name for first_name / last_name columns
   const spaceIdx = fullName.indexOf(" ");
   const firstName = spaceIdx > -1 ? fullName.slice(0, spaceIdx) : fullName;
   const lastName = spaceIdx > -1 ? fullName.slice(spaceIdx + 1) : "";
 
-  const { error: dbError } = await supabase.from("website_leads").insert({
-    first_name: firstName,
-    last_name: lastName,
-    full_name: fullName,
-    email,
-    company,
-    interest,
-    message,
-    source,
-  });
+  await Promise.allSettled([
+    supabase.from("website_leads").insert({
+      first_name: firstName,
+      last_name: lastName,
+      full_name: fullName,
+      email,
+      company,
+      interest,
+      message,
+      source,
+    }),
 
-  if (dbError) {
-    console.error("[lets-talk] Supabase error:", dbError.message);
-  }
+    addToGHL({ firstName, lastName, email, companyName: company, source }),
 
-  const hasResend =
-    process.env.RESEND_API_KEY && !process.env.RESEND_API_KEY.startsWith("re_REPLACE");
-
-  if (hasResend) {
-    try {
-      await Promise.all([
-        resend.emails.send({
-          from: "3rd & Taylor <tiffany.nwahiri@results.3rdandtaylor.com>",
-          to: ["tiffany.nwahiri@3rdandtaylor.com"],
-          subject: `New inquiry — ${fullName} (${source})`,
-          html: `
-            <p>New contact form submission:</p>
-            <table cellpadding="6">
-              <tr><td><strong>Name</strong></td><td>${fullName}</td></tr>
-              <tr><td><strong>Email</strong></td><td>${email}</td></tr>
-              <tr><td><strong>Company</strong></td><td>${company || "—"}</td></tr>
-              <tr><td><strong>Interested in</strong></td><td>${interest || "—"}</td></tr>
-              <tr><td><strong>Message</strong></td><td>${message || "—"}</td></tr>
-              <tr><td><strong>Source</strong></td><td>${source}</td></tr>
-            </table>
-          `,
-        }),
-        resend.emails.send({
-          from: "Tiffany at 3rd & Taylor <tiffany.nwahiri@results.3rdandtaylor.com>",
-          to: [email],
-          subject: "Got your note — talk soon!",
-          html: `
-            <p>Hi ${firstName},</p>
-            <p>Thanks for reaching out to 3rd & Taylor. I've received your message and will be back with a point of view on your fastest path to pipeline within one business day.</p>
-            <p>Talk soon,<br><strong>Tiffany</strong><br>3rd & Taylor</p>
-          `,
-        }),
-      ]);
-    } catch (emailError) {
-      console.error("[lets-talk] Resend error:", emailError);
-    }
-  }
+    ...(process.env.RESEND_API_KEY && !process.env.RESEND_API_KEY.startsWith("re_REPLACE")
+      ? [
+          resend.emails.send({
+            from: "3rd & Taylor <tiffany.nwahiri@results.3rdandtaylor.com>",
+            to: ["tiffany.nwahiri@3rdandtaylor.com"],
+            subject: `New inquiry — ${fullName} (${source})`,
+            html: `
+              <p>New contact form submission:</p>
+              <table cellpadding="6">
+                <tr><td><strong>Name</strong></td><td>${fullName}</td></tr>
+                <tr><td><strong>Email</strong></td><td>${email}</td></tr>
+                <tr><td><strong>Company</strong></td><td>${company || "—"}</td></tr>
+                <tr><td><strong>Interested in</strong></td><td>${interest || "—"}</td></tr>
+                <tr><td><strong>Message</strong></td><td>${message || "—"}</td></tr>
+                <tr><td><strong>Source</strong></td><td>${source}</td></tr>
+              </table>
+            `,
+          }),
+          resend.emails.send({
+            from: "Tiffany at 3rd & Taylor <tiffany.nwahiri@results.3rdandtaylor.com>",
+            to: [email],
+            subject: "Got your note — talk soon!",
+            html: `
+              <p>Hi ${firstName},</p>
+              <p>Thanks for reaching out to 3rd & Taylor. I've received your message and will be back with a point of view on your fastest path to pipeline within one business day.</p>
+              <p>Talk soon,<br><strong>Tiffany</strong><br>3rd & Taylor</p>
+            `,
+          }),
+        ]
+      : []),
+  ]);
 
   return NextResponse.redirect(`${base}/submission-thank-you`, 303);
 }
