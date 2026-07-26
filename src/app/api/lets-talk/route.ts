@@ -67,7 +67,12 @@ export async function POST(request: NextRequest) {
   const company = formData.get("company")?.toString().trim() ?? "";
   const interest = formData.get("interest")?.toString().trim() ?? "";
   const message = formData.get("message")?.toString().trim() ?? "";
-  const source = formData.get("source")?.toString() ?? "website";
+  const source       = formData.get("source")?.toString() ?? "website";
+  const utm_source   = formData.get("utm_source")?.toString()   ?? null;
+  const utm_medium   = formData.get("utm_medium")?.toString()   ?? null;
+  const utm_campaign = formData.get("utm_campaign")?.toString() ?? null;
+  const utm_term     = formData.get("utm_term")?.toString()     ?? null;
+  const utm_content  = formData.get("utm_content")?.toString()  ?? null;
 
   if (!fullName || !email) {
     return NextResponse.redirect(`${base}/submission-thank-you?status=error`, 303);
@@ -87,6 +92,11 @@ export async function POST(request: NextRequest) {
       interest,
       message,
       source,
+      utm_source,
+      utm_medium,
+      utm_campaign,
+      utm_term,
+      utm_content,
     }),
 
     addToGHL({ firstName, lastName, email, companyName: company, source }),

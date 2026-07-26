@@ -20,12 +20,20 @@ export default function ResourceEmailForm({
     setError("");
     setSubmitting(true);
     try {
+      const p = new URLSearchParams(window.location.search);
+      const utms = {
+        utm_source:   p.get("utm_source")   ?? undefined,
+        utm_medium:   p.get("utm_medium")   ?? undefined,
+        utm_campaign: p.get("utm_campaign") ?? undefined,
+        utm_term:     p.get("utm_term")     ?? undefined,
+        utm_content:  p.get("utm_content")  ?? undefined,
+      };
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/resource-email-deliver`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, firstName, resourceSlug, resourceTitle }),
+          body: JSON.stringify({ email, firstName, resourceSlug, resourceTitle, ...utms }),
         },
       );
       if (!res.ok) {

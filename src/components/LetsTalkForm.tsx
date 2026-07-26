@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 
 type Props = {
@@ -9,6 +10,21 @@ type Props = {
 
 const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
   const dark = variant === "dark";
+
+  const [utms, setUtms] = useState({
+    utm_source: "", utm_medium: "", utm_campaign: "", utm_term: "", utm_content: "",
+  });
+
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    setUtms({
+      utm_source:   p.get("utm_source")   ?? "",
+      utm_medium:   p.get("utm_medium")   ?? "",
+      utm_campaign: p.get("utm_campaign") ?? "",
+      utm_term:     p.get("utm_term")     ?? "",
+      utm_content:  p.get("utm_content")  ?? "",
+    });
+  }, []);
 
   const labelCls = dark ? "text-cream/80" : "text-ink/80";
   const inputCls = dark
@@ -22,6 +38,11 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
       className={`rounded-3xl p-8 space-y-5 ${dark ? "bg-cream/5 border border-cream/10" : "bg-cream border border-border"}`}
     >
       <input type="hidden" name="source" value={source} />
+      <input type="hidden" name="utm_source"   value={utms.utm_source} />
+      <input type="hidden" name="utm_medium"   value={utms.utm_medium} />
+      <input type="hidden" name="utm_campaign" value={utms.utm_campaign} />
+      <input type="hidden" name="utm_term"     value={utms.utm_term} />
+      <input type="hidden" name="utm_content"  value={utms.utm_content} />
       {/* Honeypot — invisible to humans, bots fill it in */}
       <input
         type="text"
