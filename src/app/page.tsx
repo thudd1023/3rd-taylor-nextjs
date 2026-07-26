@@ -327,7 +327,7 @@ const FinalCTA = () => (
         <p className="mt-8 text-ink/70 text-sm">Not sure where to start? <Link href="/free-gtm-scan" className="font-semibold underline underline-offset-4 hover:text-cream">Try a Free GTM Scan →</Link></p>
       </div>
       <div className="bg-cream rounded-3xl p-6 md:p-8 shadow-bold">
-        <LetsTalkForm source="app" />
+        <LetsTalkForm source="home" />
       </div>
     </div>
   </section>

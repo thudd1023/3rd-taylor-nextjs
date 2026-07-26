@@ -22,6 +22,15 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
       className={`rounded-3xl p-8 space-y-5 ${dark ? "bg-cream/5 border border-cream/10" : "bg-cream border border-border"}`}
     >
       <input type="hidden" name="source" value={source} />
+      {/* Honeypot — invisible to humans, bots fill it in */}
+      <input
+        type="text"
+        name="website_url"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", opacity: 0 }}
+      />
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div>

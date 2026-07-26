@@ -41,7 +41,26 @@ async function addToGHL(contact: {
 
 export async function POST(request: NextRequest) {
   const base = new URL(request.url).origin;
+
+  // Block requests not originating from the real site
+  const origin = request.headers.get("origin") ?? "";
+  const referer = request.headers.get("referer") ?? "";
+  const allowed = ["https://www.3rdandtaylor.com", "https://3rdandtaylor.com"];
+  const fromSite =
+    allowed.some((d) => origin.startsWith(d)) ||
+    allowed.some((d) => referer.startsWith(d));
+
+  if (!fromSite) {
+    return new NextResponse(null, { status: 403 });
+  }
+
   const formData = await request.formData();
+
+  // Honeypot — bots fill this in, real users don't
+  const honeypot = formData.get("website_url")?.toString() ?? "";
+  if (honeypot) {
+    return NextResponse.redirect(`${base}/submission-thank-you`, 303);
+  }
 
   const fullName = formData.get("full_name")?.toString().trim() ?? "";
   const email = formData.get("email")?.toString().trim().toLowerCase() ?? "";
