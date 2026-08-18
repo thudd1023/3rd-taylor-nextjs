@@ -91,6 +91,14 @@ export default async function LandingPageDetail({ params }: Props) {
               >
                 {p.ctaLabel || "Let's Talk"} <ArrowRight className="h-4 w-4" />
               </a>
+              {p.secondaryCtaUrl && (
+                <a
+                  href={p.secondaryCtaUrl}
+                  className="inline-flex items-center gap-2 px-7 py-4 rounded-full font-semibold border border-ink/20 hover:border-ink hover:bg-ink hover:text-cream transition-all"
+                >
+                  {p.secondaryCtaLabel || "Learn More"} <ArrowRight className="h-4 w-4" />
+                </a>
+              )}
             </div>
           </div>
         </section>

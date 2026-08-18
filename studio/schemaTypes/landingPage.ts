@@ -89,6 +89,8 @@ export const landingPage = defineType({
     }),
     defineField({ name: "ctaLabel", type: "string", title: "CTA Label" }),
     defineField({ name: "ctaUrl", type: "url", title: "CTA URL" }),
+    defineField({ name: "secondaryCtaLabel", type: "string", title: "Secondary CTA Label" }),
+    defineField({ name: "secondaryCtaUrl", type: "url", title: "Secondary CTA URL" }),
     defineField({ name: "seoTitle", type: "string", title: "SEO Title" }),
     defineField({ name: "seoDescription", type: "text", title: "SEO Description" }),
     defineField({ name: "publishedAt", type: "datetime", title: "Published At" }),

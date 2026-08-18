@@ -64,6 +64,8 @@ export type LandingPageFull = LandingPageCard & {
   relatedPages?: LandingPageCard[];
   ctaLabel?: string;
   ctaUrl?: string;
+  secondaryCtaLabel?: string;
+  secondaryCtaUrl?: string;
   seoTitle?: string;
   seoDescription?: string;
 };
