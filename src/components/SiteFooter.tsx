@@ -7,6 +7,7 @@ const company = [
   { label: "About", href: "/about" },
   { label: "Why 3rd + Taylor", href: "/why" },
   { label: "Resources", href: "/resources" },
+  { label: "Where We Work", href: "/best" },
   { label: "Who We Serve (by Role)", href: "/who-we-serve/by-role" },
   { label: "Who We Serve (by Industry)", href: "/who-we-serve/by-industry" },
   { label: "FAQs", href: "/faqs" },

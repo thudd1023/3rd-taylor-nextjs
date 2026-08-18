@@ -43,6 +43,55 @@ export type ResourceFull = ResourceCard & {
 
 export type Taxonomy = { _id: string; title: string; slug: { current: string } };
 
+export type LandingPageCard = {
+  _id: string;
+  title: string;
+  slug: { current: string };
+  pageCategory?: string;
+  targetQuery?: string;
+  city?: string;
+  region?: string;
+  country?: string;
+  heroHeadline?: string;
+  heroSubheadline?: string;
+  publishedAt?: string;
+};
+
+export type LandingPageFull = LandingPageCard & {
+  proofPoints?: string[];
+  body?: unknown[];
+  faqs?: { question: string; answer: string }[];
+  relatedPages?: LandingPageCard[];
+  ctaLabel?: string;
+  ctaUrl?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+};
+
+const landingPageCardProjection = `{
+  _id, title, slug, pageCategory, targetQuery, city, region, country,
+  heroHeadline, heroSubheadline, publishedAt
+}`;
+
+export async function fetchLandingPages(): Promise<LandingPageCard[]> {
+  return sanityClient.fetch(
+    `*[_type == "landingPage" && draft != true] | order(title asc) ${landingPageCardProjection}`,
+    {},
+    noCache,
+  );
+}
+
+export async function fetchLandingPage(slug: string): Promise<LandingPageFull | null> {
+  return sanityClient.fetch(
+    `*[_type == "landingPage" && slug.current == $slug && draft != true][0]{
+      ...,
+      "relatedPages": relatedPages[]->${landingPageCardProjection}
+    }`,
+    { slug },
+    noCache,
+  );
+}
+
 const cardProjection = `{
   _id, title, slug, excerpt, publishedAt, featured, externalUrl, heroImage,
   "contentType": contentType->{ title, slug },

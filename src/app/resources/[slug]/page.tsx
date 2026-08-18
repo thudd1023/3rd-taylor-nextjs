@@ -30,8 +30,22 @@ export default async function ResourceDetail({ params }: Props) {
 
   const isGuide = !!r.flipbookUrl;
 
+  const jsonLdArticle = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: r.title,
+    description: r.excerpt || r.seoDescription || undefined,
+    datePublished: r.publishedAt || undefined,
+    dateModified: r.publishedAt || undefined,
+    author: r.author?.name ? { "@type": "Person", name: r.author.name } : { "@type": "Organization", name: "3rd + Taylor" },
+    publisher: { "@type": "Organization", name: "3rd + Taylor", url: "https://www.3rdandtaylor.com" },
+    image: r.heroImage ? urlFor(r.heroImage).width(1200).url() : undefined,
+    mainEntityOfPage: `https://www.3rdandtaylor.com/resources/${r.slug.current}`,
+  };
+
   return (
     <div className="min-h-screen bg-background text-ink">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }} />
       <SiteNav />
 
       {isGuide ? (
