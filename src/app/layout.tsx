@@ -18,6 +18,7 @@ const bricolage = Bricolage_Grotesque({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.3rdandtaylor.com"),
   title: "3rd + Taylor | B2B Growth Agency",
   description: "3rd + Taylor helps B2B tech companies build pipeline, convert buyers, and scale revenue with the Campaign Engine.",
 };

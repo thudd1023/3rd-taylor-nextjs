@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/free-gtm-scan/results/"],
+        disallow: ["/api/"],
       },
       // AI crawlers/agents — explicitly allowed since AI citations and
       // answer-engine visibility are a primary goal for this site.
