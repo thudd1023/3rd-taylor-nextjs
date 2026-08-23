@@ -97,7 +97,7 @@ const SiteFooter = () => (
         <div className="flex gap-6">
           <Link href="/terms" className="hover:text-cream/70">Terms & Conditions</Link>
           <Link href="/privacy" className="hover:text-cream/70">Privacy Policy</Link>
-          <Link href="/sitemap" className="hover:text-cream/70">Sitemap</Link>
+          <Link href="/sitemap.xml" className="hover:text-cream/70">Sitemap</Link>
         </div>
       </div>
       <address className="mt-4 not-italic text-xs text-cream/30">
