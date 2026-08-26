@@ -65,6 +65,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.redirect(`${base}/submission-thank-you`, 303);
   }
 
+  // Cloudflare Turnstile — no-op until TURNSTILE_SECRET_KEY is configured,
+  // so this deploys safely ahead of the env var being set.
+  if (process.env.TURNSTILE_SECRET_KEY) {
+    const turnstileToken = formData.get("cf-turnstile-response")?.toString() ?? "";
+    const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        secret: process.env.TURNSTILE_SECRET_KEY,
+        response: turnstileToken,
+        remoteip: request.headers.get("x-forwarded-for") ?? "",
+      }),
+    });
+    const verifyData = await verifyRes.json();
+    if (!verifyData.success) {
+      return NextResponse.redirect(`${base}/submission-thank-you`, 303);
+    }
+  }
+
   const fullName = formData.get("full_name")?.toString().trim() ?? "";
   const email = formData.get("email")?.toString().trim().toLowerCase() ?? "";
   const company = formData.get("company")?.toString().trim() ?? "";

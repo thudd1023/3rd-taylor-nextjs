@@ -53,6 +53,14 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
         style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", opacity: 0 }}
       />
 
+      {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+        <div
+          className="cf-turnstile"
+          data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+          data-theme={dark ? "dark" : "light"}
+        />
+      )}
+
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${labelCls}`}>

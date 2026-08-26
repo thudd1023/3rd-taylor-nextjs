@@ -36,6 +36,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           data-location-id="g5Zvn5MGlJX8DOVSpLCI"
           strategy="afterInteractive"
         />
+        {/* Cloudflare Turnstile — bot verification for native forms */}
+        <Script
+          id="turnstile"
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+          strategy="afterInteractive"
+          async
+          defer
+        />
         <Script
           id="gtm-script"
           strategy="afterInteractive"
