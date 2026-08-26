@@ -81,6 +81,36 @@ export async function POST(request: NextRequest) {
     return NextResponse.redirect(`${base}/submission-thank-you?status=error`, 303);
   }
 
+  // Block known newsletter-signup / link-spam bot patterns. These bots replay a
+  // static templated POST body rather than interacting with the form, so the
+  // honeypot never trips — but the message text is highly repetitive and
+  // distinct from how a real prospect describes a business problem.
+  const SPAM_PATTERNS = [
+    /please send me news and updates by email/i,
+    /please let me know when i am subscribed/i,
+    /please confirm my subscription/i,
+    /i'?d like to subscribe to/i,
+    /please add me for news about/i,
+    /please send me updates about/i,
+    /add me to your (newsletter|mailing list)/i,
+    /3rdandtaylor\.com/i,
+  ];
+  if (SPAM_PATTERNS.some((p) => p.test(message))) {
+    return NextResponse.redirect(`${base}/submission-thank-you`, 303);
+  }
+
+  // Throttle: the same email address submitting repeatedly within 24h is a
+  // strong bot signal (these spam runs reuse a handful of addresses across
+  // dozens of randomly-generated names).
+  const { count: recentCount } = await supabase
+    .from("website_leads")
+    .select("id", { count: "exact", head: true })
+    .eq("email", email)
+    .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+  if ((recentCount ?? 0) >= 2) {
+    return NextResponse.redirect(`${base}/submission-thank-you`, 303);
+  }
+
   const spaceIdx = fullName.indexOf(" ");
   const firstName = spaceIdx > -1 ? fullName.slice(0, spaceIdx) : fullName;
   const lastName = spaceIdx > -1 ? fullName.slice(spaceIdx + 1) : "";
