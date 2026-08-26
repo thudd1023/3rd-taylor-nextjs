@@ -8,12 +8,25 @@ type Props = {
   source?: string;
 };
 
+declare global {
+  interface Window {
+    onTurnstileVerified?: () => void;
+    onTurnstileExpired?: () => void;
+  }
+}
+
 const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
   const dark = variant === "dark";
+  const hasTurnstile = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   const [utms, setUtms] = useState({
     utm_source: "", utm_medium: "", utm_campaign: "", utm_term: "", utm_content: "",
   });
+  // Native form POST with no submit handler — if Turnstile's async check
+  // hasn't finished when the button is clicked, cf-turnstile-response is
+  // empty and the server correctly (but silently) rejects it, same as a
+  // bot. Disabling submit until Turnstile confirms closes that race.
+  const [turnstileReady, setTurnstileReady] = useState(!hasTurnstile);
 
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
@@ -25,6 +38,12 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
       utm_content:  p.get("utm_content")  ?? "",
     });
   }, []);
+
+  useEffect(() => {
+    if (!hasTurnstile) return;
+    window.onTurnstileVerified = () => setTurnstileReady(true);
+    window.onTurnstileExpired = () => setTurnstileReady(false);
+  }, [hasTurnstile]);
 
   const labelCls = dark ? "text-cream/80" : "text-ink/80";
   const inputCls = dark
@@ -53,11 +72,13 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
         style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", opacity: 0 }}
       />
 
-      {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+      {hasTurnstile && (
         <div
           className="cf-turnstile"
           data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
           data-theme={dark ? "dark" : "light"}
+          data-callback="onTurnstileVerified"
+          data-expired-callback="onTurnstileExpired"
         />
       )}
 
@@ -136,11 +157,13 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
 
       <button
         type="submit"
-        className={`group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-semibold transition-all ${
+        disabled={!turnstileReady}
+        className={`group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
           dark ? "bg-warm text-ink hover:bg-cream" : "bg-ink text-cream hover:bg-accent"
         }`}
       >
-        Send <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+        {turnstileReady ? "Send" : "Verifying…"}
+        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
       </button>
     </form>
   );
