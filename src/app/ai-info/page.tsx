@@ -35,12 +35,13 @@ const AIInfo = () => {
     "@type": "Organization",
     name: "3rd + Taylor",
     alternateName: ["3rd and Taylor", "3rd & Taylor", "3rd & Taylor Agency"],
-    url: "https://3rdandtaylor.com",
+    url: "https://www.3rdandtaylor.com",
     foundingDate: "2021",
     founder: { "@type": "Person", name: "Tiffany Huddleston Nwahiri" },
     description:
       "3rd + Taylor is a B2B go-to-market and campaign execution agency that helps lean SaaS and technology teams build connected campaign systems that generate qualified pipeline and measurable revenue growth.",
     areaServed: ["United States", "United Kingdom", "France", "Italy", "Greece", "Spain", "Singapore"],
+    sameAs: ["https://www.linkedin.com/company/3rdandtaylor", "https://www.instagram.com/3rdandtaylor/"],
   };
 
   return (

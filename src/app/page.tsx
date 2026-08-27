@@ -379,6 +379,7 @@ const jsonLdOrg = {
   description:
     "3rd + Taylor is a B2B go-to-market and campaign execution agency that helps lean SaaS and technology teams build connected campaign systems that generate qualified pipeline and measurable revenue growth.",
   areaServed: ["United States", "United Kingdom", "France", "Italy", "Greece", "Spain", "Singapore"],
+  sameAs: ["https://www.linkedin.com/company/3rdandtaylor", "https://www.instagram.com/3rdandtaylor/"],
 };
 
 const jsonLdWebsite = {
