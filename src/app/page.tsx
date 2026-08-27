@@ -368,9 +368,31 @@ const FAQ = () => {
   );
 };
 
+const jsonLdOrg = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "3rd + Taylor",
+  alternateName: ["3rd and Taylor", "3rd & Taylor", "3rd & Taylor Agency"],
+  url: "https://www.3rdandtaylor.com",
+  foundingDate: "2021",
+  founder: { "@type": "Person", name: "Tiffany Huddleston Nwahiri" },
+  description:
+    "3rd + Taylor is a B2B go-to-market and campaign execution agency that helps lean SaaS and technology teams build connected campaign systems that generate qualified pipeline and measurable revenue growth.",
+  areaServed: ["United States", "United Kingdom", "France", "Italy", "Greece", "Spain", "Singapore"],
+};
+
+const jsonLdWebsite = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "3rd + Taylor",
+  url: "https://www.3rdandtaylor.com",
+};
+
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-background">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }} />
       <SiteNav />
       <Hero />
       <LogoBar />
