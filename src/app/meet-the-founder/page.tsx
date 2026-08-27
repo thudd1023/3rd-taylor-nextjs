@@ -95,8 +95,26 @@ const FinalCTA = () => (
   </section>
 );
 
+const jsonLdPerson = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Tiffany Huddleston Nwahiri",
+  jobTitle: "Founder & CEO",
+  description:
+    "Tiffany Huddleston Nwahiri founded 3rd + Taylor in 2021 and brings more than 15 years of B2B marketing experience across scale-up, funded, and enterprise companies.",
+  url: "https://www.3rdandtaylor.com/meet-the-founder",
+  image: `https://www.3rdandtaylor.com${tiffanyHeadshot.src}`,
+  worksFor: {
+    "@type": "Organization",
+    name: "3rd + Taylor",
+    url: "https://www.3rdandtaylor.com",
+  },
+  knowsAbout: ["B2B Marketing", "Go-to-Market Strategy", "Demand Generation", "Revenue Marketing"],
+};
+
 const MeetTheFounder = () => (
   <div className="min-h-screen bg-background">
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdPerson) }} />
     <SiteNav />
     <main>
       <Hero />

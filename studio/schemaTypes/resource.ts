@@ -89,5 +89,20 @@ export const resource = defineType({
     }),
     defineField({ name: "seoTitle", type: "string", title: "SEO Title" }),
     defineField({ name: "seoDescription", type: "text", title: "SEO Description" }),
+    defineField({
+      name: "faqs",
+      type: "array",
+      title: "FAQs",
+      of: [
+        {
+          type: "object",
+          name: "faqItem",
+          fields: [
+            { name: "question", type: "string", title: "Question" },
+            { name: "answer", type: "text", title: "Answer" },
+          ],
+        },
+      ],
+    }),
   ],
 });

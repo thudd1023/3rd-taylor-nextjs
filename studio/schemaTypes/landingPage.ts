@@ -20,6 +20,7 @@ export const landingPage = defineType({
           { title: "Region / Country", value: "region-country" },
           { title: "Persona", value: "persona" },
           { title: "Pricing Model", value: "pricing-model" },
+          { title: "Comparison", value: "comparison" },
           { title: "Hybrid", value: "hybrid" },
         ],
       },

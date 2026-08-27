@@ -39,6 +39,7 @@ export type ResourceFull = ResourceCard & {
   seoTitle?: string;
   seoDescription?: string;
   author?: { name: string; role?: string; image?: SanityImageSource };
+  faqs?: { question: string; answer: string }[];
 };
 
 export type Taxonomy = { _id: string; title: string; slug: { current: string } };

@@ -18,6 +18,7 @@ const GROUPS: { key: string; label: string }[] = [
   { key: "region-country", label: "By Region & Country" },
   { key: "persona", label: "By Company Stage" },
   { key: "pricing-model", label: "By Engagement Model" },
+  { key: "comparison", label: "Compare Your Options" },
   { key: "hybrid", label: "More Markets" },
 ];
 

@@ -521,8 +521,27 @@ const FinalCTA = () => (
   </section>
 );
 
+const jsonLdFaq = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    { q: "Is there discounted pricing for multiple portfolio companies?", a: "Yes. Portfolio-wide pricing is available when we partner with three or more portcos — applies to Revenue Growth Audits, Campaign Engine engagements, and Momentum retainers." },
+    { q: "What if founders resist outside help?", a: "Resistance usually fades fast when founders see quick wins in the first 30 days, a team with real operator experience, and your endorsement. We work alongside their team — not above it — and avoid long-term lock-ins or unnecessary upsells." },
+    { q: "How much involvement do you need from us?", a: "Minimal. You make the warm intro and provide context. We handle founder relationships, execution, and reporting. 3rd + Taylor is designed to extend your support, not create more work for you." },
+    { q: "Can you work with companies at different stages simultaneously?", a: "Absolutely. We have playbooks for every stage. A Seed company might need positioning and a Campaign Engine launch. A Series B might need a full Momentum Team. We approach each stage appropriately." },
+    { q: "What if a portfolio company already has marketing talent?", a: "We amplify existing talent, not replace it. We bring specialized expertise (paid media, campaign systems, account-based programs, automation) that most in-house teams don't have at depth." },
+    { q: "What's your typical engagement length?", a: "Revenue Growth Audits: 30 days · Campaign Engine: 90 days · Momentum Team: 6-month initial commitment, then month-to-month with 30-day notice." },
+    { q: "How do you report results?", a: "Monthly portfolio summaries for in-flight progress and early pipeline indicators. Board-ready decks for deep-dives covering pipeline contribution, marketing-influenced revenue, CAC trends, and conversion metrics." },
+  ].map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
 const VCOperators = () => (
   <div className="min-h-screen bg-background text-ink">
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }} />
     <SiteNav />
     <main>
       <Hero />

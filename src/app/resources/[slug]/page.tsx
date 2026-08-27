@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Mail, BookOpen } from "lucide-react";
 import { PortableText } from "@portabletext/react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 import ResourceEmailForm from "@/components/ResourceEmailForm";
@@ -43,9 +44,25 @@ export default async function ResourceDetail({ params }: Props) {
     mainEntityOfPage: `https://www.3rdandtaylor.com/resources/${r.slug.current}`,
   };
 
+  const hasFaqs = !!r.faqs?.length;
+  const jsonLdFaq = hasFaqs
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: r.faqs!.map((f) => ({
+          "@type": "Question",
+          name: f.question,
+          acceptedAnswer: { "@type": "Answer", text: f.answer },
+        })),
+      }
+    : null;
+
   return (
     <div className="min-h-screen bg-background text-ink">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }} />
+      {jsonLdFaq && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }} />
+      )}
       <SiteNav />
 
       {isGuide ? (
@@ -189,6 +206,22 @@ export default async function ResourceDetail({ params }: Props) {
                   },
                 }}
               />
+            </div>
+          )}
+
+          {hasFaqs && (
+            <div className="mt-14">
+              <h2 className="font-sans text-2xl md:text-3xl font-medium leading-tight mb-6">
+                Frequently asked questions
+              </h2>
+              <Accordion type="single" collapsible className="w-full">
+                {r.faqs!.map((f, i) => (
+                  <AccordionItem key={i} value={`faq-${i}`}>
+                    <AccordionTrigger className="text-left">{f.question}</AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground leading-relaxed">{f.answer}</AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </div>
           )}
 
