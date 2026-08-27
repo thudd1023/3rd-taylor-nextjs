@@ -65,22 +65,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.redirect(`${base}/submission-thank-you`, 303);
   }
 
-  // Cloudflare Turnstile — no-op until TURNSTILE_SECRET_KEY is configured,
-  // so this deploys safely ahead of the env var being set.
+  // Cloudflare Turnstile — TEMPORARILY FAIL-OPEN (2026-08-27): the widget is
+  // getting stuck and blocking real submissions (a real lead was missed).
+  // Log failures instead of rejecting until the widget config is fixed.
+  // Content-pattern filter + 24h email throttle below still apply.
   if (process.env.TURNSTILE_SECRET_KEY) {
     const turnstileToken = formData.get("cf-turnstile-response")?.toString() ?? "";
-    const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        secret: process.env.TURNSTILE_SECRET_KEY,
-        response: turnstileToken,
-        remoteip: request.headers.get("x-forwarded-for") ?? "",
-      }),
-    });
-    const verifyData = await verifyRes.json();
-    if (!verifyData.success) {
-      return NextResponse.redirect(`${base}/submission-thank-you`, 303);
+    try {
+      const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          secret: process.env.TURNSTILE_SECRET_KEY,
+          response: turnstileToken,
+          remoteip: request.headers.get("x-forwarded-for") ?? "",
+        }),
+      });
+      const verifyData = await verifyRes.json();
+      if (!verifyData.success) {
+        console.error("[lets-talk] Turnstile verification failed (allowing through — fail-open):", verifyData["error-codes"]);
+      }
+    } catch (err) {
+      console.error("[lets-talk] Turnstile verification request errored (allowing through — fail-open):", err);
     }
   }
 

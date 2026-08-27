@@ -12,6 +12,7 @@ declare global {
   interface Window {
     onTurnstileVerified?: () => void;
     onTurnstileExpired?: () => void;
+    onTurnstileError?: (code?: string) => void;
   }
 }
 
@@ -43,6 +44,14 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
     if (!hasTurnstile) return;
     window.onTurnstileVerified = () => setTurnstileReady(true);
     window.onTurnstileExpired = () => setTurnstileReady(false);
+    window.onTurnstileError = (code) => {
+      console.error("[LetsTalkForm] Turnstile error, enabling submit anyway:", code);
+      setTurnstileReady(true);
+    };
+    // Safety net: never let the button get stuck if the widget doesn't
+    // load/respond at all (no success, no error callback fired).
+    const timeout = setTimeout(() => setTurnstileReady(true), 6000);
+    return () => clearTimeout(timeout);
   }, [hasTurnstile]);
 
   const labelCls = dark ? "text-cream/80" : "text-ink/80";
@@ -79,6 +88,7 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
           data-theme={dark ? "dark" : "light"}
           data-callback="onTurnstileVerified"
           data-expired-callback="onTurnstileExpired"
+          data-error-callback="onTurnstileError"
         />
       )}
 
