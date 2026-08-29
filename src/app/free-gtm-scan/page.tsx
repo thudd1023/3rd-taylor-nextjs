@@ -38,6 +38,7 @@ type FormState = {
   channels: string[];
   competitors: [string, string, string];
   marketingOptIn: boolean;
+  url: string;
 };
 
 const initial: FormState = {
@@ -51,6 +52,7 @@ const initial: FormState = {
   channels: [],
   competitors: ["", "", ""],
   marketingOptIn: false,
+  url: "",
 };
 
 const ScanForm = ({ instanceKey }: { instanceKey: string }) => {
@@ -89,6 +91,7 @@ const ScanForm = ({ instanceKey }: { instanceKey: string }) => {
           competitors,
           marketingOptIn: form.marketingOptIn,
           marketingOptInAt: form.marketingOptIn ? new Date().toISOString() : null,
+          url: form.url,
         },
       });
       if (error) throw error;
@@ -116,6 +119,17 @@ const ScanForm = ({ instanceKey }: { instanceKey: string }) => {
 
   return (
     <form onSubmit={onSubmit} className="space-y-5">
+      {/* Honeypot — invisible to humans, bots fill it in */}
+      <input
+        type="text"
+        name="url"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        value={form.url}
+        onChange={(e) => update("url", e.target.value)}
+        style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", opacity: 0 }}
+      />
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <Label htmlFor={idp("firstName")}>First name *</Label>
