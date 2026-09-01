@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Check, Sparkles, Zap, Target, BarChart3, ArrowRight } from "lucide-react";
+import { Check, Sparkles, Zap, Target, BarChart3, ArrowRight, Info } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,7 @@ type FormState = {
   competitors: [string, string, string];
   marketingOptIn: boolean;
   url: string;
+  linkedinAdLibraryUrl: string;
 };
 
 const initial: FormState = {
@@ -53,11 +54,13 @@ const initial: FormState = {
   competitors: ["", "", ""],
   marketingOptIn: false,
   url: "",
+  linkedinAdLibraryUrl: "",
 };
 
 const ScanForm = ({ instanceKey }: { instanceKey: string }) => {
   const [form, setForm] = useState<FormState>(initial);
   const [submitting, setSubmitting] = useState(false);
+  const [showLinkedInInfo, setShowLinkedInInfo] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -92,6 +95,7 @@ const ScanForm = ({ instanceKey }: { instanceKey: string }) => {
           marketingOptIn: form.marketingOptIn,
           marketingOptInAt: form.marketingOptIn ? new Date().toISOString() : null,
           url: form.url,
+          linkedinAdLibraryUrl: form.linkedinAdLibraryUrl.trim(),
         },
       });
       if (error) throw error;
@@ -213,6 +217,7 @@ const ScanForm = ({ instanceKey }: { instanceKey: string }) => {
         <div className="grid sm:grid-cols-2 gap-2">
           {CHANNELS.map((c) => {
             const selected = form.channels.includes(c);
+            const isLinkedIn = c === "LinkedIn Ads";
             return (
               <label
                 key={c}
@@ -227,11 +232,67 @@ const ScanForm = ({ instanceKey }: { instanceKey: string }) => {
                   checked={selected}
                   onCheckedChange={() => toggleChannel(c)}
                 />
-                <span>{c}</span>
+                <span className="flex-1">{c}</span>
+                {isLinkedIn && selected && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowLinkedInInfo((v) => !v);
+                    }}
+                    className="text-accent hover:text-ink transition-colors"
+                    aria-label="Why we need your LinkedIn Ad Library link"
+                  >
+                    <Info className="h-4 w-4" />
+                  </button>
+                )}
               </label>
             );
           })}
         </div>
+
+        {form.channels.includes("LinkedIn Ads") && (
+          <div className="mt-3 rounded-xl border border-accent/30 bg-accent/5 p-4">
+            <button
+              type="button"
+              onClick={() => setShowLinkedInInfo((v) => !v)}
+              className="flex items-center gap-2 text-sm font-semibold text-accent"
+            >
+              <Info className="h-4 w-4" />
+              {showLinkedInInfo ? "Hide details" : "Why we're asking for a LinkedIn link"}
+            </button>
+            {showLinkedInInfo && (
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                LinkedIn limits automated crawling of its Ad Library, so we can&apos;t always verify LinkedIn ads on our own. To get an accurate check:{" "}
+                visit the{" "}
+                <a
+                  href="https://www.linkedin.com/ad-library/home"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-accent underline hover:no-underline"
+                >
+                  LinkedIn Ad Library
+                </a>{" "}
+                and search for your company, or go to your company&apos;s LinkedIn posts page and look for the &quot;Ads&quot; link in the left sidebar. Paste the resulting link below.
+              </p>
+            )}
+            <div className="mt-3">
+              <Label htmlFor={idp("linkedinAdLibraryUrl")} className="mb-1.5 block text-xs">
+                Your LinkedIn Ad Library link (optional, improves accuracy)
+              </Label>
+              <Input
+                id={idp("linkedinAdLibraryUrl")}
+                placeholder="https://www.linkedin.com/ad-library/search?..."
+                maxLength={500}
+                value={form.linkedinAdLibraryUrl}
+                onChange={(e) => update("linkedinAdLibraryUrl", e.target.value)}
+              />
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                Don&apos;t have it handy? That&apos;s fine — we&apos;ll let you know in your results how to get LinkedIn ads reviewed manually.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       <div>

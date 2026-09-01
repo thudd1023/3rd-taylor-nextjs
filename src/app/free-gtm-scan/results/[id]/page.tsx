@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowRight, CheckCircle2, AlertTriangle, Sparkles, Loader2, Mail } from "lucide-react";
+import { ArrowRight, CheckCircle2, AlertTriangle, Sparkles, Loader2, Mail, Info } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,9 @@ type Scan = {
   company: string;
   website: string;
   email: string;
+  channels: string[] | null;
+  linkedin_ad_library_url: string | null;
+  ad_platform_status: Record<string, string> | null;
   summary: string | null;
   score_overall: number | null;
   score_website: number | null;
@@ -107,6 +110,49 @@ const SectionCard = ({ label, blurb, score, section }: { label: string; blurb: s
     </div>
   </div>
 );
+
+const LinkedInManualReviewCallout = ({ scan }: { scan: Scan }) => {
+  const requested = !!scan.channels?.includes("LinkedIn Ads");
+  const status = scan.ad_platform_status?.["LinkedIn Ad Library"];
+  if (!requested || status === "VERIFIED_ACTIVE_ADS") return null;
+
+  const subject = `LinkedIn Ad Library Review — ${scan.company}`;
+  const body = [
+    "Hi,",
+    "",
+    "I'd like my LinkedIn ads manually reviewed as part of my Free GTM Scan.",
+    "",
+    `Company: ${scan.company}`,
+    `Website: ${scan.website}`,
+    `LinkedIn Ad Library URL: ${scan.linkedin_ad_library_url || "[paste your LinkedIn Ad Library link here]"}`,
+    "",
+    `Scan ID: ${scan.id}`,
+  ].join("\n");
+  const mailtoHref = `mailto:info@3rdandtaylor.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+  return (
+    <div className="rounded-3xl border border-accent/30 bg-accent/5 p-6 md:p-8">
+      <div className="flex items-start gap-3">
+        <Info className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
+        <div>
+          <h3 className="font-display text-lg font-medium">LinkedIn ads couldn&apos;t be verified automatically</h3>
+          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+            LinkedIn limits automated access to its Ad Library, so we couldn&apos;t confirm your LinkedIn ad activity as part of this
+            automated scan.{" "}
+            {scan.linkedin_ad_library_url
+              ? "We tried the link you provided, but weren't able to pull verified results from it."
+              : "Visit the LinkedIn Ad Library and search for your company, or check your company's LinkedIn posts page for the \"Ads\" link in the left sidebar to get your link."}
+            {" "}If you&apos;d like this reviewed, send the LinkedIn Ad Library link to{" "}
+            <a href={mailtoHref} className="text-accent underline hover:no-underline font-medium">
+              info@3rdandtaylor.com
+            </a>{" "}
+            and we&apos;ll take a look — no need to re-run the scan.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const EmailOptIn = ({ scan }: { scan: Scan }) => {
   const [email, setEmail] = useState(scan.email);
@@ -329,13 +375,15 @@ const FreeGTMScanResults = () => {
       <section className="py-10 md:py-14 bg-background">
         <div className="container max-w-5xl space-y-6">
           {SECTIONS.map((s) => (
-            <SectionCard
-              key={s.key as string}
-              label={s.label}
-              blurb={s.blurb}
-              score={scan[s.scoreKey] as number | null}
-              section={scan[s.key] as Section | null}
-            />
+            <div key={s.key as string} className="space-y-6">
+              <SectionCard
+                label={s.label}
+                blurb={s.blurb}
+                score={scan[s.scoreKey] as number | null}
+                section={scan[s.key] as Section | null}
+              />
+              {s.key === "section_paid_ads" && <LinkedInManualReviewCallout scan={scan} />}
+            </div>
           ))}
         </div>
       </section>
