@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-03-25.dahlia; custom_checkout_payment_form_preview=v1" as any,
-});
-
 async function addToGHL(contact: {
   firstName: string;
   lastName: string;
@@ -43,6 +39,10 @@ async function addToGHL(contact: {
 // Stripe requires the raw request body for webhook signature verification —
 // Next.js App Router does not call body parsers, so req.body is already raw.
 export async function POST(request: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2026-03-25.dahlia; custom_checkout_payment_form_preview=v1" as any,
+  });
+
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
   const signature = request.headers.get("stripe-signature") ?? "";
   const rawBody = await request.text();

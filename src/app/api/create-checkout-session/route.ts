@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-03-25.dahlia; custom_checkout_payment_form_preview=v1" as any,
-});
-
 export async function POST(request: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2026-03-25.dahlia; custom_checkout_payment_form_preview=v1" as any,
+  });
   const origin = request.headers.get("origin") ?? "";
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? origin ?? "https://www.3rdandtaylor.com";
 
