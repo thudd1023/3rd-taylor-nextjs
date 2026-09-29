@@ -89,7 +89,7 @@ export default function AuditThankYouPage() {
                 <h3 className="font-display text-xl font-medium mb-4">Schedule your discovery call</h3>
                 <div
                   className="calendly-inline-widget rounded-2xl overflow-hidden border border-border"
-                  data-url="https://calendly.com/tiffany-nwahiri-3rdandtaylor/30min"
+                  data-url="https://calendly.com/tiffany-nwahiri-3rdandtaylor/free-gtm-audit-discovery-call"
                   style={{ minWidth: "320px", height: "700px" }}
                 />
                 <Script
