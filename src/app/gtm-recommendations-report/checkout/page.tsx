@@ -30,61 +30,72 @@ const appearance = {
 };
 
 export default function CheckoutPage() {
-  const mountedRef = useRef(false);
-  const [stripeReady, setStripeReady] = useState(false);
+  const initializedRef = useRef(false);
+  const [formReady, setFormReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function initCheckout() {
-    if (mountedRef.current) return;
-    mountedRef.current = true;
+  function tryInit() {
+    if (initializedRef.current) return;
+    if (!window.Stripe) return; // script not loaded yet — onLoad will call us again
 
-    if (!window.Stripe) {
-      setError("Payment system failed to load. Please refresh the page.");
-      return;
-    }
+    initializedRef.current = true;
 
     const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
     if (!stripeKey) {
-      setError("Payment configuration error. Please contact us at tiffany.nwahiri@3rdandtaylor.com.");
+      setError("Payment configuration error. Please email tiffany.nwahiri@3rdandtaylor.com to complete your purchase.");
       return;
     }
 
-    try {
-      const stripe = window.Stripe(stripeKey, { betas: ["custom_checkout_payment_form_1"] });
+    const stripe = window.Stripe(stripeKey, { betas: ["custom_checkout_payment_form_1"] });
 
-      const res = await fetch("/api/create-checkout-session", { method: "POST" });
-      if (!res.ok) throw new Error("Could not start checkout session.");
-      const { client_secret: clientSecret } = await res.json();
+    // Pass the fetch Promise directly — initCheckoutFormSdk accepts a Promise<string>
+    const clientSecretPromise = fetch("/api/create-checkout-session", { method: "POST" })
+      .then((res) => {
+        if (!res.ok) throw new Error(`API error ${res.status}`);
+        return res.json();
+      })
+      .then((data) => data.client_secret as string);
 
-      const checkout = await stripe.initCheckoutFormSdk({ clientSecret, appearance });
+    const checkout = stripe.initCheckoutFormSdk({ clientSecret: clientSecretPromise, appearance });
 
-      const form = checkout.createForm({ layout: "expanded" });
-      form.mount("#checkout-form");
+    const form = checkout.createForm({ layout: "expanded" });
+    form.mount("#checkout-form");
 
-      const loadActionsResult = await checkout.loadActions();
-      if (loadActionsResult.type === "success") {
+    checkout.loadActions().then((result: any) => {
+      if (result?.type === "success") {
         form.on("confirm", async (event: any) => {
           try {
-            await loadActionsResult.actions.confirm({ formConfirmEvent: event });
+            await result.actions.confirm({ formConfirmEvent: event });
           } catch (err: any) {
-            console.error("Payment confirmation error:", err);
+            console.error("[checkout] confirm error:", err);
           }
         });
       }
+      setFormReady(true);
+    });
 
-      setStripeReady(true);
-    } catch (err: any) {
-      console.error("[checkout] init error:", err);
-      setError("Something went wrong loading the payment form. Please try again or contact us.");
-    }
+    // Also show the form area once the clientSecret resolves (even before loadActions)
+    clientSecretPromise
+      .then(() => setFormReady(true))
+      .catch((err) => {
+        console.error("[checkout] session error:", err);
+        setError("Could not start the checkout session. Please refresh and try again, or email tiffany.nwahiri@3rdandtaylor.com.");
+      });
   }
+
+  // Run on mount in case Stripe.js was already cached and onLoad won't fire
+  useEffect(() => {
+    if (window.Stripe) tryInit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
+      {/* onLoad fires when script loads fresh; useEffect covers the cached case */}
       <Script
         src="https://js.stripe.com/dahlia/stripe.js"
         strategy="afterInteractive"
-        onLoad={initCheckout}
+        onLoad={tryInit}
       />
       <SiteNav />
       <main className="min-h-screen bg-background">
@@ -174,7 +185,7 @@ export default function CheckoutPage() {
                     </div>
                   ) : (
                     <>
-                      {!stripeReady && (
+                      {!formReady && (
                         <div className="flex items-center justify-center py-12 text-muted-foreground text-sm">
                           <svg className="animate-spin h-5 w-5 mr-2 text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -188,6 +199,7 @@ export default function CheckoutPage() {
                   )}
                 </div>
               </div>
+
             </div>
           </div>
         </section>
