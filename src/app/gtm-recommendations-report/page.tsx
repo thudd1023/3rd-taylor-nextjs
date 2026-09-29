@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ArrowRight, Check, FileText, Video, Search, BarChart3, Target, PenTool, Sparkles } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
@@ -9,15 +8,15 @@ import reportPaidAds from "@/assets/report-paid-ads.png";
 import reportContent from "@/assets/report-content.png";
 import reportWebsite from "@/assets/report-website.png";
 
-const CHECKOUT_URL = "/gtm-recommendations-report/checkout";
+const CHECKOUT_URL = "https://buy.stripe.com/dRm3coaPM22H6YYeUI3sI02";
 
 const PrimaryCTA = ({ children }: { children: React.ReactNode }) => (
-  <Link
+  <a
     href={CHECKOUT_URL}
     className="inline-flex items-center gap-2 bg-ink text-cream text-sm md:text-base font-semibold px-6 py-3 rounded-full hover:bg-accent transition-colors"
   >
     {children} <ArrowRight className="h-4 w-4" />
-  </Link>
+  </a>
 );
 
 const Hero = () => (
@@ -192,12 +191,12 @@ const FinalCTA = () => (
         $999 for a complete, human-reviewed GTM analysis. Credited toward your next Campaign Engine engagement.
       </p>
       <div className="mt-10 flex justify-center">
-        <Link
+        <a
           href={CHECKOUT_URL}
           className="inline-flex items-center gap-2 bg-accent text-ink text-base font-semibold px-7 py-3.5 rounded-full hover:bg-cream transition-colors"
         >
           Get My Recommendations Report — $999 <ArrowRight className="h-4 w-4" />
-        </Link>
+        </a>
       </div>
     </div>
   </section>
