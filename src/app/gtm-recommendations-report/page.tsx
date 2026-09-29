@@ -9,17 +9,15 @@ import reportPaidAds from "@/assets/report-paid-ads.png";
 import reportContent from "@/assets/report-content.png";
 import reportWebsite from "@/assets/report-website.png";
 
-const PAYMENT_URL = "https://app.hubspot.com/payment-links/44715546/preview/8956060/test";
+const CHECKOUT_URL = "/gtm-recommendations-report/checkout";
 
 const PrimaryCTA = ({ children }: { children: React.ReactNode }) => (
-  <a
-    href={PAYMENT_URL}
-    target="_blank"
-    rel="noopener noreferrer"
+  <Link
+    href={CHECKOUT_URL}
     className="inline-flex items-center gap-2 bg-ink text-cream text-sm md:text-base font-semibold px-6 py-3 rounded-full hover:bg-accent transition-colors"
   >
     {children} <ArrowRight className="h-4 w-4" />
-  </a>
+  </Link>
 );
 
 const Hero = () => (
@@ -28,7 +26,7 @@ const Hero = () => (
       <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
         <div className="lg:col-span-7 text-left">
           <div className="inline-flex items-center gap-2 rounded-full border border-ink/15 bg-cream/60 backdrop-blur px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-ink/70">
-            <Sparkles className="h-3.5 w-3.5" /> $499 · Human-Reviewed GTM Audit
+            <Sparkles className="h-3.5 w-3.5" /> $999 · Human-Reviewed GTM Audit
           </div>
           <h1 className="mt-6 font-display text-5xl md:text-6xl lg:text-7xl leading-[0.95] font-medium text-balance">
             Your scan showed you the score. Now let's <em className="italic text-accent">build the plan.</em>
@@ -37,7 +35,7 @@ const Hero = () => (
             The GTM Recommendations Report is a complete human-reviewed analysis of your public-facing go-to-market — with specific, prioritized recommendations delivered as a written report and recorded video walkthrough.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-4">
-            <PrimaryCTA>Get My Recommendations Report — $499</PrimaryCTA>
+            <PrimaryCTA>Get My Recommendations Report — $999</PrimaryCTA>
             <span className="text-sm text-muted-foreground">Fully creditable toward any Campaign Engine engagement.</span>
           </div>
         </div>
@@ -87,7 +85,7 @@ const Compare = () => {
           <div className="grid grid-cols-3 bg-cream text-sm md:text-base">
             <div className="p-4 md:p-6 font-semibold text-ink/60 uppercase tracking-wider text-xs"></div>
             <div className="p-4 md:p-6 font-semibold border-l border-border">Free GTM Scan</div>
-            <div className="p-4 md:p-6 font-semibold border-l border-border bg-accent/10">GTM Recommendations Report ($499)</div>
+            <div className="p-4 md:p-6 font-semibold border-l border-border bg-accent/10">GTM Recommendations Report ($999)</div>
           </div>
           {rows.map((r, i) => (
             <div key={r.label} className={`grid grid-cols-3 text-sm md:text-base border-t border-border ${i % 2 ? "bg-cream/40" : ""}`}>
@@ -191,17 +189,15 @@ const FinalCTA = () => (
         Get the clarity your team needs to <em className="italic text-accent">move faster.</em>
       </h2>
       <p className="mt-6 text-lg text-cream/70">
-        $499 for a complete, human-reviewed GTM analysis. Credited toward your next Campaign Engine engagement.
+        $999 for a complete, human-reviewed GTM analysis. Credited toward your next Campaign Engine engagement.
       </p>
       <div className="mt-10 flex justify-center">
-        <a
-          href={PAYMENT_URL}
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          href={CHECKOUT_URL}
           className="inline-flex items-center gap-2 bg-accent text-ink text-base font-semibold px-7 py-3.5 rounded-full hover:bg-cream transition-colors"
         >
-          Get My Recommendations Report — $499 <ArrowRight className="h-4 w-4" />
-        </a>
+          Get My Recommendations Report — $999 <ArrowRight className="h-4 w-4" />
+        </Link>
       </div>
     </div>
   </section>
