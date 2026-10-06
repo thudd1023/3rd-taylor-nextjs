@@ -28,6 +28,7 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
   // empty and the server correctly (but silently) rejects it, same as a
   // bot. Disabling submit until Turnstile confirms closes that race.
   const [turnstileReady, setTurnstileReady] = useState(!hasTurnstile);
+  const [turnstileFailed, setTurnstileFailed] = useState(false);
 
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
@@ -42,16 +43,18 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
 
   useEffect(() => {
     if (!hasTurnstile) return;
-    window.onTurnstileVerified = () => setTurnstileReady(true);
-    window.onTurnstileExpired = () => setTurnstileReady(false);
-    window.onTurnstileError = (code) => {
-      console.error("[LetsTalkForm] Turnstile error, enabling submit anyway:", code);
+    window.onTurnstileVerified = () => {
       setTurnstileReady(true);
+      setTurnstileFailed(false);
     };
-    // Safety net: never let the button get stuck if the widget doesn't
-    // load/respond at all (no success, no error callback fired).
-    const timeout = setTimeout(() => setTurnstileReady(true), 6000);
-    return () => clearTimeout(timeout);
+    window.onTurnstileExpired = () => setTurnstileReady(false);
+    // The server rejects submissions without a valid token, so never enable
+    // submit on failure — ask the visitor to retry instead of dropping their note.
+    window.onTurnstileError = (code) => {
+      console.error("[LetsTalkForm] Turnstile error:", code);
+      setTurnstileReady(false);
+      setTurnstileFailed(true);
+    };
   }, [hasTurnstile]);
 
   const labelCls = dark ? "text-cream/80" : "text-ink/80";
@@ -172,9 +175,14 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
           dark ? "bg-warm text-ink hover:bg-cream" : "bg-ink text-cream hover:bg-accent"
         }`}
       >
-        {turnstileReady ? "Send" : "Verifying…"}
+        {turnstileReady ? "Send" : turnstileFailed ? "Verification failed" : "Verifying…"}
         <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
       </button>
+      {turnstileFailed && (
+        <p className={`text-sm ${dark ? "text-cream/80" : "text-ink/80"}`}>
+          We couldn&apos;t verify your browser. Please refresh the page and try again, or email us directly.
+        </p>
+      )}
     </form>
   );
 };

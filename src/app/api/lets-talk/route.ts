@@ -1,15 +1,63 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
+import { promises as dns } from "node:dns";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-);
+function getSupabase(): SupabaseClient | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) {
+    console.error("[lets-talk] Missing Supabase URL or key — cannot write website_leads");
+    return null;
+  }
+  return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+}
 
-// Lazy: only instantiate at request time so the build doesn't fail without the key
 function getResend() {
   return new Resend(process.env.RESEND_API_KEY!);
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+const EMAIL_RE = /^[^\s@<>()[\]\\,;:"]+@([a-z0-9-]+\.)+[a-z]{2,}$/i;
+
+const DISPOSABLE_DOMAINS = new Set([
+  "mailinator.com", "guerrillamail.com", "10minutemail.com", "tempmail.com",
+  "temp-mail.org", "yopmail.com", "trashmail.com", "sharklasers.com",
+  "getnada.com", "dispostable.com", "throwawaymail.com", "maildrop.cc",
+  "fakeinbox.com", "mailnesia.com", "mohmal.com", "example.com", "test.com",
+]);
+
+// Max confirmation emails per rolling hour, across all visitors. Circuit
+// breaker so a bot run can never bounce more than this many messages.
+const MAX_CONFIRMATIONS_PER_HOUR = 5;
+
+// Only send a confirmation if the domain can actually receive mail.
+async function domainAcceptsMail(email: string): Promise<boolean> {
+  const domain = email.split("@")[1];
+  if (!domain || DISPOSABLE_DOMAINS.has(domain)) return false;
+  try {
+    const mx = await dns.resolveMx(domain);
+    return mx.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+function notifyRecipients() {
+  return (process.env.LEAD_NOTIFY_EMAILS ?? "tiffany.nwahiri@3rdandtaylor.com")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 async function addToGHL(contact: {
@@ -19,6 +67,10 @@ async function addToGHL(contact: {
   companyName: string;
   source: string;
 }) {
+  if (!process.env.GHL_API_KEY) {
+    console.error("[lets-talk] GHL_API_KEY missing — skipping CRM sync");
+    return;
+  }
   const res = await fetch("https://rest.gohighlevel.com/v1/contacts/", {
     method: "POST",
     headers: {
@@ -65,12 +117,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.redirect(`${base}/submission-thank-you`, 303);
   }
 
-  // Cloudflare Turnstile — TEMPORARILY FAIL-OPEN (2026-08-27): the widget is
-  // getting stuck and blocking real submissions (a real lead was missed).
-  // Log failures instead of rejecting until the widget config is fixed.
-  // Content-pattern filter + 24h email throttle below still apply.
+  // Cloudflare Turnstile — FAIL-CLOSED. A missing/invalid token is a bot: drop
+  // the submission silently (no DB row, no notification, no confirmation email).
+  // Only if Cloudflare's siteverify endpoint itself is unreachable do we let the
+  // lead through, and in that case no confirmation email is sent to the visitor.
+  let humanVerified = false;
   if (process.env.TURNSTILE_SECRET_KEY) {
     const turnstileToken = formData.get("cf-turnstile-response")?.toString() ?? "";
+    if (!turnstileToken) {
+      console.error("[lets-talk] Blocked: missing Turnstile token");
+      return NextResponse.redirect(`${base}/submission-thank-you?status=error`, 303);
+    }
     try {
       const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
         method: "POST",
@@ -78,15 +135,17 @@ export async function POST(request: NextRequest) {
         body: new URLSearchParams({
           secret: process.env.TURNSTILE_SECRET_KEY,
           response: turnstileToken,
-          remoteip: request.headers.get("x-forwarded-for") ?? "",
+          remoteip: request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "",
         }),
       });
       const verifyData = await verifyRes.json();
       if (!verifyData.success) {
-        console.error("[lets-talk] Turnstile verification failed (allowing through — fail-open):", verifyData["error-codes"]);
+        console.error("[lets-talk] Blocked: Turnstile verification failed:", verifyData["error-codes"]);
+        return NextResponse.redirect(`${base}/submission-thank-you?status=error`, 303);
       }
+      humanVerified = true;
     } catch (err) {
-      console.error("[lets-talk] Turnstile verification request errored (allowing through — fail-open):", err);
+      console.error("[lets-talk] Turnstile siteverify unreachable (allowing lead, skipping confirmation email):", err);
     }
   }
 
@@ -104,6 +163,11 @@ export async function POST(request: NextRequest) {
 
   if (!fullName || !email) {
     return NextResponse.redirect(`${base}/submission-thank-you?status=error`, 303);
+  }
+
+  // Reject malformed addresses outright — they can only bounce.
+  if (!EMAIL_RE.test(email) || email.length > 254) {
+    return NextResponse.redirect(`${base}/submission-thank-you`, 303);
   }
 
   // Block known newsletter-signup / link-spam bot patterns. These bots replay a
@@ -124,72 +188,125 @@ export async function POST(request: NextRequest) {
     return NextResponse.redirect(`${base}/submission-thank-you`, 303);
   }
 
+  const supabase = getSupabase();
+
   // Throttle: the same email address submitting repeatedly within 24h is a
   // strong bot signal (these spam runs reuse a handful of addresses across
   // dozens of randomly-generated names).
-  const { count: recentCount } = await supabase
-    .from("website_leads")
-    .select("id", { count: "exact", head: true })
-    .eq("email", email)
-    .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
-  if ((recentCount ?? 0) >= 2) {
-    return NextResponse.redirect(`${base}/submission-thank-you`, 303);
+  if (supabase) {
+    const { count: recentCount, error: throttleError } = await supabase
+      .from("website_leads")
+      .select("id", { count: "exact", head: true })
+      .eq("email", email)
+      .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+    if (throttleError) {
+      console.error("[lets-talk] throttle query failed:", throttleError);
+    } else if ((recentCount ?? 0) >= 2) {
+      return NextResponse.redirect(`${base}/submission-thank-you`, 303);
+    }
   }
 
   const spaceIdx = fullName.indexOf(" ");
   const firstName = spaceIdx > -1 ? fullName.slice(0, spaceIdx) : fullName;
   const lastName = spaceIdx > -1 ? fullName.slice(spaceIdx + 1) : "";
 
-  await Promise.allSettled([
-    supabase.from("website_leads").insert({
-      first_name: firstName,
-      last_name: lastName,
-      full_name: fullName,
-      email,
-      company,
-      interest,
-      message,
-      source,
-      utm_source,
-      utm_medium,
-      utm_campaign,
-      utm_term,
-      utm_content,
-    }),
+  const lead = {
+    first_name: firstName,
+    last_name: lastName,
+    full_name: fullName,
+    email,
+    company,
+    interest,
+    message,
+    source,
+    utm_source,
+    utm_medium,
+    utm_campaign,
+    utm_term,
+    utm_content,
+  };
 
-    addToGHL({ firstName, lastName, email, companyName: company, source }),
+  // Insert first and inspect the PostgREST error object. supabase-js does not
+  // throw on RLS/constraint failures — Promise.allSettled previously treated
+  // those as success, so Resend/GHL could fire with no website_leads row.
+  if (supabase) {
+    const { error: insertError } = await supabase.from("website_leads").insert(lead);
+    if (insertError) {
+      console.error("[lets-talk] website_leads insert failed:", insertError);
+    } else {
+      console.log("[lets-talk] website_leads insert ok:", email, source);
+    }
+  }
 
-    ...(process.env.RESEND_API_KEY && !process.env.RESEND_API_KEY.startsWith("re_REPLACE")
-      ? [
-          getResend().emails.send({
-            from: "3rd & Taylor <tiffany.nwahiri@results.3rdandtaylor.com>",
-            to: ["tiffany.nwahiri@3rdandtaylor.com"],
-            subject: `New inquiry — ${fullName} (${source})`,
-            html: `
-              <p>New contact form submission:</p>
-              <table cellpadding="6">
-                <tr><td><strong>Name</strong></td><td>${fullName}</td></tr>
-                <tr><td><strong>Email</strong></td><td>${email}</td></tr>
-                <tr><td><strong>Company</strong></td><td>${company || "—"}</td></tr>
-                <tr><td><strong>Interested in</strong></td><td>${interest || "—"}</td></tr>
-                <tr><td><strong>Message</strong></td><td>${message || "—"}</td></tr>
-                <tr><td><strong>Source</strong></td><td>${source}</td></tr>
-              </table>
-            `,
-          }),
-          getResend().emails.send({
-            from: "Tiffany at 3rd & Taylor <tiffany.nwahiri@results.3rdandtaylor.com>",
-            to: [email],
-            subject: "Got your note — talk soon!",
-            html: `
-              <p>Hi ${firstName},</p>
-              <p>Thanks for reaching out to 3rd & Taylor. I've received your message and will be back with a point of view on your fastest path to pipeline within one business day.</p>
-              <p>Talk soon,<br><strong>Tiffany</strong><br>3rd & Taylor</p>
-            `,
-          }),
-        ]
-      : []),
-  ]);
+  await addToGHL({ firstName, lastName, email, companyName: company, source });
+
+  if (process.env.RESEND_API_KEY && !process.env.RESEND_API_KEY.startsWith("re_REPLACE")) {
+    const resend = getResend();
+    const safeName = escapeHtml(fullName);
+    const safeEmail = escapeHtml(email);
+    const safeCompany = escapeHtml(company || "—");
+    const safeInterest = escapeHtml(interest || "—");
+    const safeMessage = escapeHtml(message || "—").replace(/\n/g, "<br>");
+    const safeSource = escapeHtml(source);
+    const safeFirst = escapeHtml(firstName);
+
+    const internal = await resend.emails.send({
+      from: "3rd & Taylor <tiffany.nwahiri@results.3rdandtaylor.com>",
+      to: notifyRecipients(),
+      replyTo: email,
+      subject: `New inquiry — ${fullName} (${source})`,
+      html: `
+        <p>New contact form submission:</p>
+        <table cellpadding="6">
+          <tr><td><strong>Name</strong></td><td>${safeName}</td></tr>
+          <tr><td><strong>Email</strong></td><td>${safeEmail}</td></tr>
+          <tr><td><strong>Company</strong></td><td>${safeCompany}</td></tr>
+          <tr><td><strong>Interested in</strong></td><td>${safeInterest}</td></tr>
+          <tr><td><strong>Message</strong></td><td>${safeMessage}</td></tr>
+          <tr><td><strong>Source</strong></td><td>${safeSource}</td></tr>
+        </table>
+      `,
+    });
+    if (internal.error) {
+      console.error("[lets-talk] internal Resend notification failed:", internal.error);
+    } else {
+      console.log("[lets-talk] internal Resend notification sent:", internal.data?.id);
+    }
+
+    // Visitor confirmation is the only email that can bounce, so it is gated:
+    // Turnstile-verified human, deliverable domain (MX), and under the hourly cap.
+    let sendConfirmation = humanVerified && (await domainAcceptsMail(email));
+    if (sendConfirmation && supabase) {
+      const { count: hourCount, error: hourError } = await supabase
+        .from("website_leads")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", new Date(Date.now() - 60 * 60 * 1000).toISOString());
+      if (hourError || (hourCount ?? 0) > MAX_CONFIRMATIONS_PER_HOUR) {
+        sendConfirmation = false;
+        console.error("[lets-talk] Hourly confirmation cap hit or check failed — skipping visitor email:", hourError ?? hourCount);
+      }
+    }
+
+    if (!sendConfirmation) {
+      console.log("[lets-talk] visitor confirmation skipped for", email);
+    } else {
+      const visitor = await resend.emails.send({
+        from: "Tiffany at 3rd & Taylor <tiffany.nwahiri@results.3rdandtaylor.com>",
+        to: [email],
+        subject: "Got your note — talk soon!",
+        html: `
+          <p>Hi ${safeFirst},</p>
+          <p>Thanks for reaching out to 3rd & Taylor. I've received your message and will be back with a point of view on your fastest path to pipeline within one business day.</p>
+          <p>Talk soon,<br><strong>Tiffany</strong><br>3rd & Taylor</p>
+        `,
+      });
+      if (visitor.error) {
+        console.error("[lets-talk] visitor Resend confirmation failed:", visitor.error);
+      } else {
+        console.log("[lets-talk] visitor Resend confirmation sent:", visitor.data?.id);
+      }
+    }
+  }
 
   return NextResponse.redirect(`${base}/submission-thank-you`, 303);
 }
