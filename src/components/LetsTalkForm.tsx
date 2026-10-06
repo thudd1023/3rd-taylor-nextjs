@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 
 type Props = {
@@ -8,12 +8,40 @@ type Props = {
   source?: string;
 };
 
+type TurnstileApi = {
+  render: (el: HTMLElement, opts: Record<string, unknown>) => string;
+  remove: (id: string) => void;
+};
+
 declare global {
   interface Window {
-    onTurnstileVerified?: () => void;
-    onTurnstileExpired?: () => void;
-    onTurnstileError?: (code?: string) => void;
+    turnstile?: TurnstileApi;
   }
+}
+
+const TURNSTILE_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+
+// Load api.js once, resolving when window.turnstile is ready. Explicit
+// rendering (instead of the implicit .cf-turnstile scan) works no matter when
+// the form mounts relative to the script, including client-side navigation.
+let turnstileLoader: Promise<TurnstileApi> | null = null;
+function loadTurnstile(): Promise<TurnstileApi> {
+  if (window.turnstile) return Promise.resolve(window.turnstile);
+  if (!turnstileLoader) {
+    turnstileLoader = new Promise<TurnstileApi>((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = TURNSTILE_SRC;
+      script.async = true;
+      script.onload = () =>
+        window.turnstile ? resolve(window.turnstile) : reject(new Error("turnstile missing"));
+      script.onerror = () => reject(new Error("turnstile script failed to load"));
+      document.head.appendChild(script);
+    }).catch((err) => {
+      turnstileLoader = null;
+      throw err;
+    });
+  }
+  return turnstileLoader as Promise<TurnstileApi>;
 }
 
 const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
@@ -29,6 +57,7 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
   // bot. Disabling submit until Turnstile confirms closes that race.
   const [turnstileReady, setTurnstileReady] = useState(!hasTurnstile);
   const [turnstileFailed, setTurnstileFailed] = useState(false);
+  const turnstileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
@@ -42,20 +71,36 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (!hasTurnstile) return;
-    window.onTurnstileVerified = () => {
-      setTurnstileReady(true);
-      setTurnstileFailed(false);
-    };
-    window.onTurnstileExpired = () => setTurnstileReady(false);
+    if (!hasTurnstile || !turnstileRef.current) return;
+    let widgetId: string | null = null;
+    let cancelled = false;
     // The server rejects submissions without a valid token, so never enable
     // submit on failure — ask the visitor to retry instead of dropping their note.
-    window.onTurnstileError = (code) => {
+    const fail = (code?: unknown) => {
       console.error("[LetsTalkForm] Turnstile error:", code);
       setTurnstileReady(false);
       setTurnstileFailed(true);
     };
-  }, [hasTurnstile]);
+    loadTurnstile()
+      .then((ts) => {
+        if (cancelled || !turnstileRef.current) return;
+        widgetId = ts.render(turnstileRef.current, {
+          sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+          theme: dark ? "dark" : "light",
+          callback: () => {
+            setTurnstileReady(true);
+            setTurnstileFailed(false);
+          },
+          "expired-callback": () => setTurnstileReady(false),
+          "error-callback": fail,
+        });
+      })
+      .catch(fail);
+    return () => {
+      cancelled = true;
+      if (widgetId && window.turnstile) window.turnstile.remove(widgetId);
+    };
+  }, [hasTurnstile, dark]);
 
   const labelCls = dark ? "text-cream/80" : "text-ink/80";
   const inputCls = dark
@@ -84,16 +129,7 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
         style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", opacity: 0 }}
       />
 
-      {hasTurnstile && (
-        <div
-          className="cf-turnstile"
-          data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-          data-theme={dark ? "dark" : "light"}
-          data-callback="onTurnstileVerified"
-          data-expired-callback="onTurnstileExpired"
-          data-error-callback="onTurnstileError"
-        />
-      )}
+      {hasTurnstile && <div ref={turnstileRef} />}
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
