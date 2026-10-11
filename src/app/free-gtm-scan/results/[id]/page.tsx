@@ -114,7 +114,10 @@ const SectionCard = ({ label, blurb, score, section }: { label: string; blurb: s
 const LinkedInManualReviewCallout = ({ scan }: { scan: Scan }) => {
   const requested = !!scan.channels?.includes("LinkedIn Ads");
   const status = scan.ad_platform_status?.["LinkedIn Ad Library"];
-  if (!requested || status === "VERIFIED_ACTIVE_ADS") return null;
+  // VERIFIED_ACTIVE_ADS and NO_ADS_FOUND are both confirmed results (the
+  // latter via Adyntel's structured data, not a scraping failure) — only
+  // show the manual-review path when we genuinely couldn't check.
+  if (!requested || status === "VERIFIED_ACTIVE_ADS" || status === "NO_ADS_FOUND") return null;
 
   const subject = `LinkedIn Ad Library Review — ${scan.company}`;
   const body = [
