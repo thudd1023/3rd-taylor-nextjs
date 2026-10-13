@@ -241,7 +241,7 @@ const ScanForm = ({ instanceKey }: { instanceKey: string }) => {
                       setShowLinkedInInfo((v) => !v);
                     }}
                     className="text-accent hover:text-ink transition-colors"
-                    aria-label="Why we need your LinkedIn Ad Library link"
+                    aria-label="About your LinkedIn Ads Library link"
                   >
                     <Info className="h-4 w-4" />
                   </button>
@@ -259,26 +259,19 @@ const ScanForm = ({ instanceKey }: { instanceKey: string }) => {
               className="flex items-center gap-2 text-sm font-semibold text-accent"
             >
               <Info className="h-4 w-4" />
-              {showLinkedInInfo ? "Hide details" : "Why we're asking for a LinkedIn link"}
+              {showLinkedInInfo ? "Hide details" : "Have your exact LinkedIn Ads link? (optional)"}
             </button>
             {showLinkedInInfo && (
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                LinkedIn limits automated crawling of its Ad Library, so we can&apos;t always verify LinkedIn ads on our own. To get an accurate check:{" "}
-                visit the{" "}
-                <a
-                  href="https://www.linkedin.com/ad-library/home"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-accent underline hover:no-underline"
-                >
-                  LinkedIn Ad Library
-                </a>{" "}
-                and search for your company, or go to your company&apos;s LinkedIn posts page and look for the &quot;Ads&quot; link in the left sidebar. Paste the resulting link below.
+                We automatically check LinkedIn for active ads as part of your scan — you don&apos;t need to do anything. If you want to point us to
+                the exact right page, here&apos;s how to find your link: visit your company&apos;s LinkedIn page, choose{" "}
+                <strong>&quot;View as Member,&quot;</strong> and check the left sidebar — if you&apos;re running ads, you&apos;ll see an option to
+                view them there. Paste that link below.
               </p>
             )}
             <div className="mt-3">
               <Label htmlFor={idp("linkedinAdLibraryUrl")} className="mb-1.5 block text-xs">
-                Your LinkedIn Ad Library link (optional, improves accuracy)
+                Your LinkedIn Ads Library link (optional)
               </Label>
               <Input
                 id={idp("linkedinAdLibraryUrl")}
@@ -288,7 +281,7 @@ const ScanForm = ({ instanceKey }: { instanceKey: string }) => {
                 onChange={(e) => update("linkedinAdLibraryUrl", e.target.value)}
               />
               <p className="mt-1.5 text-xs text-muted-foreground">
-                Don&apos;t have it handy? That&apos;s fine — we&apos;ll let you know in your results how to get LinkedIn ads reviewed manually.
+                Don&apos;t have it or not running LinkedIn ads? No problem — we&apos;ll check automatically either way.
               </p>
             </div>
           </div>
