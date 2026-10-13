@@ -117,9 +117,6 @@ function HeroForm() {
           )}
         </button>
 
-        <p className="mt-3 text-center text-xs text-muted-foreground">
-          We'll follow up within one business day to schedule your audit.
-        </p>
       </form>
     </div>
   );
