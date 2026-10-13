@@ -1,60 +1,160 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, FileText, Video, Search, BarChart3, Target, PenTool, Sparkles, ArrowRight, Loader2 } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
-import Image from "next/image";
-import reportPaidAds from "@/assets/report-paid-ads.png";
-import reportContent from "@/assets/report-content.png";
-import reportWebsite from "@/assets/report-website.png";
 
-const StackedPreview = () => (
-  <div className="relative h-[360px] md:h-[440px] lg:h-[480px] w-full">
-    <Image
-      src={reportWebsite}
-      alt="Sample page from the GTM Recommendations Report — Website Opportunities"
-      className="absolute top-0 left-0 w-[88%] rounded-xl shadow-bold border border-border rotate-[-4deg] origin-top-left h-auto"
-    />
-    <Image
-      src={reportContent}
-      alt="Sample page from the GTM Recommendations Report — Content Recommendations by Funnel Stage"
-      className="absolute top-12 left-8 md:top-16 md:left-12 w-[88%] rounded-xl shadow-bold border border-border rotate-[2deg] h-auto"
-    />
-    <Image
-      src={reportPaidAds}
-      alt="Sample page from the GTM Recommendations Report — Paid Ads Strengths and Gaps by Platform"
-      className="absolute top-24 left-2 md:top-32 md:left-4 w-[92%] rounded-xl shadow-bold border border-border rotate-[-1deg] h-auto"
-    />
-  </div>
-);
+const inputClass = "w-full rounded-xl border border-border bg-cream/60 px-4 py-2.5 text-sm text-ink placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-colors";
+const labelClass = "block text-xs font-semibold uppercase tracking-wider text-ink/60 mb-1";
 
-const Hero = ({ onRequestClick }: { onRequestClick: () => void }) => (
+function HeroForm() {
+  const router = useRouter();
+  const [fields, setFields] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    company_name: "",
+    company_website: "",
+    job_title: "",
+    website_url: "", // honeypot
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const set = (k: keyof typeof fields) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setFields((f) => ({ ...f, [k]: e.target.value }));
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/gtm-audit-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fields),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Something went wrong. Please try again.");
+        setLoading(false);
+        return;
+      }
+      router.push("/gtm-recommendations-report/thank-you");
+    } catch {
+      setError("Something went wrong. Please try again or email tiffany.nwahiri@3rdandtaylor.com.");
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="bg-background/90 backdrop-blur rounded-3xl border border-border shadow-bold p-6 md:p-8">
+      <p className="text-xs font-semibold uppercase tracking-widest text-accent mb-5">Request your free audit</p>
+
+      {error && (
+        <div className="mb-5 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} noValidate>
+        {/* Honeypot */}
+        <input
+          type="text"
+          name="website_url"
+          value={fields.website_url}
+          onChange={set("website_url")}
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", overflow: "hidden" }}
+        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass} htmlFor="h_first_name">First name</label>
+            <input id="h_first_name" type="text" required autoComplete="given-name" placeholder="Jane" className={inputClass} value={fields.first_name} onChange={set("first_name")} />
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="h_last_name">Last name</label>
+            <input id="h_last_name" type="text" required autoComplete="family-name" placeholder="Smith" className={inputClass} value={fields.last_name} onChange={set("last_name")} />
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <label className={labelClass} htmlFor="h_email">Work email</label>
+          <input id="h_email" type="email" required autoComplete="email" placeholder="jane@yourcompany.com" className={inputClass} value={fields.email} onChange={set("email")} />
+        </div>
+
+        <div className="mt-4">
+          <label className={labelClass} htmlFor="h_job_title">Job title</label>
+          <input id="h_job_title" type="text" required autoComplete="organization-title" placeholder="VP of Marketing" className={inputClass} value={fields.job_title} onChange={set("job_title")} />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 mt-4">
+          <div>
+            <label className={labelClass} htmlFor="h_company_name">Company</label>
+            <input id="h_company_name" type="text" required autoComplete="organization" placeholder="Acme Inc." className={inputClass} value={fields.company_name} onChange={set("company_name")} />
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="h_company_website">Website</label>
+            <input id="h_company_website" type="url" required autoComplete="url" placeholder="https://acme.com" className={inputClass} value={fields.company_website} onChange={set("company_website")} />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="mt-6 w-full inline-flex items-center justify-center gap-2 bg-accent text-ink text-sm font-semibold px-6 py-3 rounded-full hover:bg-accent/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {loading ? (
+            <><Loader2 className="h-4 w-4 animate-spin" /> Submitting…</>
+          ) : (
+            <>Request My GTM Audit <ArrowRight className="h-4 w-4" /></>
+          )}
+        </button>
+
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          We'll follow up within one business day to schedule your audit.
+        </p>
+      </form>
+    </div>
+  );
+}
+
+const Hero = () => (
   <section className="relative overflow-hidden bg-gradient-sunset grain">
     <div className="container relative pt-20 pb-16 md:pt-28 md:pb-20 max-w-6xl">
-      <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-        <div className="lg:col-span-7 text-left">
+      <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+        <div className="lg:col-span-6 text-left pt-4">
           <div className="inline-flex items-center gap-2 rounded-full border border-ink/15 bg-cream/60 backdrop-blur px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-ink/70">
             <Sparkles className="h-3.5 w-3.5" /> Human-Reviewed GTM Audit
           </div>
           <h1 className="mt-6 font-display text-5xl md:text-6xl lg:text-7xl leading-[0.95] font-medium text-balance">
             Let's build your <em className="italic text-accent">go-to-market plan.</em>
           </h1>
-          <p className="mt-8 max-w-2xl text-lg md:text-xl text-muted-foreground leading-relaxed">
+          <p className="mt-6 max-w-lg text-lg text-muted-foreground leading-relaxed">
             A complete human-reviewed analysis of your public-facing go-to-market — with specific, prioritized recommendations delivered as a written report and recorded video walkthrough.
           </p>
-          <div className="mt-10">
-            <button
-              onClick={onRequestClick}
-              className="inline-flex items-center gap-2 bg-ink text-cream text-sm md:text-base font-semibold px-6 py-3 rounded-full hover:bg-accent transition-colors"
-            >
-              Request My Audit <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
+          <ul className="mt-8 space-y-2">
+            {[
+              "Website messaging & positioning",
+              "SEO structure & search demand",
+              "Paid ad library review",
+              "Content strategy assessment",
+            ].map((item) => (
+              <li key={item} className="flex items-center gap-2 text-sm text-ink">
+                <Check className="h-4 w-4 text-accent flex-shrink-0" />
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
-        <div className="lg:col-span-5">
-          <StackedPreview />
+        <div className="lg:col-span-6">
+          <HeroForm />
         </div>
       </div>
     </div>
@@ -118,7 +218,7 @@ const WhoFor = () => (
 );
 
 const steps = [
-  { n: "01", title: "Submit your request below" },
+  { n: "01", title: "Submit your request above" },
   { n: "02", title: "Book your discovery call — we'll gather the context needed to conduct your audit" },
   { n: "03", title: "Our strategist reviews your public-facing GTM presence (no systems access needed)" },
   { n: "04", title: "Receive your full report + recorded walkthroughs within 5 business days" },
@@ -140,152 +240,14 @@ const WhatHappens = () => (
   </section>
 );
 
-const inputClass = "w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-ink placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-colors";
-const labelClass = "block text-sm font-medium text-ink mb-1.5";
-
-function RequestForm({ formRef }: { formRef: React.RefObject<HTMLElement | null> }) {
-  const router = useRouter();
-  const [fields, setFields] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    company_name: "",
-    company_website: "",
-    job_title: "",
-    website_url: "", // honeypot
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const set = (k: keyof typeof fields) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setFields((f) => ({ ...f, [k]: e.target.value }));
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    try {
-      const res = await fetch("/api/gtm-audit-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(fields),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Something went wrong. Please try again.");
-        setLoading(false);
-        return;
-      }
-      router.push("/gtm-recommendations-report/thank-you");
-    } catch {
-      setError("Something went wrong. Please try again or email tiffany.nwahiri@3rdandtaylor.com.");
-      setLoading(false);
-    }
-  }
-
-  return (
-    <section ref={formRef as React.RefObject<HTMLElement>} className="py-20 md:py-28 bg-ink">
-      <div className="container max-w-2xl">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 rounded-full border border-cream/15 bg-cream/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-cream/70 mb-6">
-            <Sparkles className="h-3.5 w-3.5" /> Request your audit
-          </div>
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-medium leading-tight text-balance text-cream">
-            Get the clarity your team needs to <em className="italic text-accent">move faster.</em>
-          </h2>
-          <p className="mt-5 text-lg text-cream/60">
-            Fill out the form below and we'll be in touch within one business day to get your audit scheduled.
-          </p>
-        </div>
-
-        <div className="bg-background rounded-3xl p-8 md:p-10">
-          {error && (
-            <div className="mb-6 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
-              {error}
-            </div>
-          )}
-          <form onSubmit={handleSubmit} noValidate>
-            {/* Honeypot — hidden from real users, bots fill it in */}
-            <input
-              type="text"
-              name="website_url"
-              value={fields.website_url}
-              onChange={set("website_url")}
-              tabIndex={-1}
-              autoComplete="off"
-              aria-hidden="true"
-              style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", overflow: "hidden" }}
-            />
-
-            <div className="grid sm:grid-cols-2 gap-5">
-              <div>
-                <label className={labelClass} htmlFor="first_name">First name <span className="text-accent">*</span></label>
-                <input id="first_name" type="text" required autoComplete="given-name" placeholder="Jane" className={inputClass} value={fields.first_name} onChange={set("first_name")} />
-              </div>
-              <div>
-                <label className={labelClass} htmlFor="last_name">Last name <span className="text-accent">*</span></label>
-                <input id="last_name" type="text" required autoComplete="family-name" placeholder="Smith" className={inputClass} value={fields.last_name} onChange={set("last_name")} />
-              </div>
-            </div>
-
-            <div className="mt-5">
-              <label className={labelClass} htmlFor="email">Work email <span className="text-accent">*</span></label>
-              <input id="email" type="email" required autoComplete="email" placeholder="jane@yourcompany.com" className={inputClass} value={fields.email} onChange={set("email")} />
-            </div>
-
-            <div className="mt-5">
-              <label className={labelClass} htmlFor="job_title">Job title <span className="text-accent">*</span></label>
-              <input id="job_title" type="text" required autoComplete="organization-title" placeholder="VP of Marketing" className={inputClass} value={fields.job_title} onChange={set("job_title")} />
-            </div>
-
-            <div className="mt-5">
-              <label className={labelClass} htmlFor="company_name">Company name <span className="text-accent">*</span></label>
-              <input id="company_name" type="text" required autoComplete="organization" placeholder="Acme Inc." className={inputClass} value={fields.company_name} onChange={set("company_name")} />
-            </div>
-
-            <div className="mt-5">
-              <label className={labelClass} htmlFor="company_website">Company website <span className="text-accent">*</span></label>
-              <input id="company_website" type="url" required autoComplete="url" placeholder="https://yourcompany.com" className={inputClass} value={fields.company_website} onChange={set("company_website")} />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="mt-8 w-full inline-flex items-center justify-center gap-2 bg-accent text-ink text-base font-semibold px-7 py-3.5 rounded-full hover:bg-accent/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <><Loader2 className="h-4 w-4 animate-spin" /> Submitting…</>
-              ) : (
-                <>Request My GTM Audit <ArrowRight className="h-4 w-4" /></>
-              )}
-            </button>
-
-            <p className="mt-4 text-center text-xs text-muted-foreground">
-              We'll follow up within one business day to get your audit scheduled.
-            </p>
-          </form>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export default function GTMAuditPage() {
-  const formRef = useRef<HTMLElement>(null);
-
-  function scrollToForm() {
-    formRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
-
   return (
     <main className="min-h-screen bg-background">
       <SiteNav />
-      <Hero onRequestClick={scrollToForm} />
+      <Hero />
       <Included />
       <WhoFor />
       <WhatHappens />
-      <RequestForm formRef={formRef} />
       <SiteFooter />
     </main>
   );
