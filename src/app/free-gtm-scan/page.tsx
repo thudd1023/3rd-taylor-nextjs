@@ -448,7 +448,7 @@ const Categories = () => {
           </div>
           <Button asChild size="lg" variant="secondary" className="rounded-full">
             <a href="/gtm-recommendations-report">
-              Get a Complete Plan — $499 <ArrowRight className="ml-2 h-4 w-4" />
+              Get a Complete Plan — $999 <ArrowRight className="ml-2 h-4 w-4" />
             </a>
           </Button>
         </div>

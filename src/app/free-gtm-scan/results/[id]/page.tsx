@@ -399,7 +399,7 @@ const FreeGTMScanResults = () => {
               This is just the overview
             </div>
             <h2 className="mt-3 font-display text-4xl md:text-5xl font-medium leading-[1.05]">
-              Go from <em className="italic text-warm">scattered to streamlined</em> — for $499.
+              Go from <em className="italic text-warm">scattered to streamlined</em> — for $999.
             </h2>
             <p className="mt-5 text-lg text-cream/80 leading-relaxed">
               Your free scan shows you <em>where</em> you stand. The GTM Recommendations Report
@@ -423,7 +423,7 @@ const FreeGTMScanResults = () => {
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="rounded-full bg-warm text-ink hover:bg-cream">
                 <a href="/gtm-recommendations-report">
-                  Get the $499 Report <ArrowRight className="ml-2 h-4 w-4" />
+                  Get the $999 Report <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
               </Button>
               <Button
@@ -442,7 +442,7 @@ const FreeGTMScanResults = () => {
                 Bonus
               </div>
               <h3 className="mt-2 font-display text-2xl font-medium">
-                Every $499 spent here comes off your Campaign Engine invoice.
+                Every $999 spent here comes off your Campaign Engine invoice.
               </h3>
               <p className="mt-3 text-cream/70 text-sm">
                 If you decide to engage us for execution, the full cost of the report is credited
