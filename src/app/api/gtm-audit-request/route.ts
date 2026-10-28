@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
-import { ghlUtmFields, parseUtm, type Utm } from "@/lib/utm";
+import { parseUtm } from "@/lib/utm";
+import { upsertGhlContact } from "@/lib/ghl";
 
 const EMAIL_RE = /^[^\s@<>()[\]\\,;:"]+@([a-z0-9-]+\.)+[a-z]{2,}$/i;
 
@@ -154,45 +155,6 @@ function buildConfirmationEmail(firstName: string, companyName: string): string 
 </html>`;
 }
 
-async function addToGHL(contact: {
-  firstName: string;
-  lastName: string;
-  email: string;
-  companyName: string;
-  companyWebsite: string;
-  jobTitle: string;
-  utm: Utm;
-}) {
-  if (!process.env.GHL_API_KEY) {
-    console.error("[gtm-audit-request] GHL_API_KEY missing — skipping CRM sync");
-    return;
-  }
-  const res = await fetch("https://rest.gohighlevel.com/v1/contacts/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.GHL_API_KEY}`,
-    },
-    body: JSON.stringify({
-      locationId: process.env.GHL_LOCATION_ID,
-      email: contact.email,
-      firstName: contact.firstName,
-      lastName: contact.lastName,
-      companyName: contact.companyName,
-      website: contact.companyWebsite,
-      title: contact.jobTitle,
-      tags: ["gtm-audit-request", "website-lead"],
-      source: "GTM Audit Request (Event/QR)",
-      ...ghlUtmFields(contact.utm),
-    }),
-  });
-  if (!res.ok) {
-    const body = await res.text();
-    console.error("[gtm-audit-request] GHL error:", res.status, body);
-  } else {
-    console.log("[gtm-audit-request] GHL contact created:", contact.email);
-  }
-}
 
 export async function POST(request: NextRequest) {
   let body: Record<string, string>;
@@ -265,13 +227,15 @@ export async function POST(request: NextRequest) {
     console.log("[gtm-audit-request] emails sent for:", email);
   }
 
-  await addToGHL({
+  await upsertGhlContact("gtm-audit-request", {
+    email,
     firstName: first_name,
     lastName: last_name,
-    email,
     companyName: company_name,
-    companyWebsite: company_website,
-    jobTitle: job_title,
+    website: company_website,
+    title: job_title,
+    tags: ["gtm-audit-request", "website-lead"],
+    source: "GTM Audit Request (Event/QR)",
     utm: parseUtm((k) => body[k]),
   });
 

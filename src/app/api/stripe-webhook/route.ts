@@ -1,41 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { Resend } from "resend";
+import { upsertGhlContact } from "@/lib/ghl";
 
-async function addToGHL(contact: {
-  firstName: string;
-  lastName: string;
-  email: string;
-  companyName?: string;
-}) {
-  if (!process.env.GHL_API_KEY) {
-    console.error("[stripe-webhook] GHL_API_KEY missing — skipping CRM sync");
-    return;
-  }
-  const res = await fetch("https://rest.gohighlevel.com/v1/contacts/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.GHL_API_KEY}`,
-    },
-    body: JSON.stringify({
-      locationId: process.env.GHL_LOCATION_ID,
-      email: contact.email,
-      firstName: contact.firstName,
-      lastName: contact.lastName,
-      companyName: contact.companyName ?? "",
-      tags: ["gtm-audit-purchase", "website-lead"],
-      source: "GTM Recommendations Report Purchase",
-    }),
-  });
-
-  if (!res.ok) {
-    const body = await res.text();
-    console.error("[stripe-webhook] GHL error:", res.status, body);
-  } else {
-    console.log("[stripe-webhook] GHL contact created for:", contact.email);
-  }
-}
 
 function buildConfirmationEmail(firstName: string): string {
   const calendlyUrl = "https://calendly.com/tiffany-nwahiri-3rdandtaylor/free-gtm-audit-discovery-call";
@@ -228,7 +195,13 @@ export async function POST(request: NextRequest) {
       const lastName = spaceIdx > -1 ? fullName.slice(spaceIdx + 1) : "";
 
       await Promise.allSettled([
-        addToGHL({ firstName, lastName, email: details.email }),
+        upsertGhlContact("stripe-webhook", {
+          email: details.email,
+          firstName,
+          lastName,
+          tags: ["gtm-audit-purchase", "website-lead"],
+          source: "GTM Recommendations Report Purchase",
+        }),
         sendConfirmationEmail(details.email, firstName),
       ]);
     }

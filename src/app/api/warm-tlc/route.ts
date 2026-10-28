@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
-import { ghlUtmFields, parseUtm, type Utm } from "@/lib/utm";
+import { parseUtm } from "@/lib/utm";
+import { upsertGhlContact } from "@/lib/ghl";
 import {
   WARM_TLC_CALENDLY_URL,
   WARM_TLC_LLM_PROMPT,
@@ -60,40 +61,6 @@ function buildEmail(firstName: string): string {
 </body></html>`;
 }
 
-async function addToGHL(contact: {
-  firstName: string;
-  lastName: string;
-  email: string;
-  website: string;
-  utm: Utm;
-}) {
-  if (!process.env.GHL_API_KEY) {
-    console.error("[warm-tlc] GHL_API_KEY missing — skipping CRM sync");
-    return;
-  }
-  const res = await fetch("https://rest.gohighlevel.com/v1/contacts/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.GHL_API_KEY}`,
-    },
-    body: JSON.stringify({
-      locationId: process.env.GHL_LOCATION_ID,
-      email: contact.email,
-      firstName: contact.firstName,
-      lastName: contact.lastName,
-      website: contact.website,
-      tags: ["warm-tlc", "marketingprofs-event", "website-lead"],
-      source: "Warm T.L.C. (MarketingProfs QR)",
-      ...ghlUtmFields(contact.utm),
-    }),
-  });
-  if (!res.ok) {
-    console.error("[warm-tlc] GHL error:", res.status, await res.text());
-  } else {
-    console.log("[warm-tlc] GHL contact created:", contact.email);
-  }
-}
 
 export async function POST(request: NextRequest) {
   let body: Record<string, string>;
@@ -148,11 +115,15 @@ export async function POST(request: NextRequest) {
     ]);
   }
 
-  try {
-    await addToGHL({ firstName: first_name, lastName: last_name, email, website: company_website, utm: parseUtm((k) => body[k]) });
-  } catch (err) {
-    console.error("[warm-tlc] GHL request failed:", err);
-  }
+  await upsertGhlContact("warm-tlc", {
+    email,
+    firstName: first_name,
+    lastName: last_name,
+    website: company_website,
+    tags: ["warm-tlc", "marketingprofs-event", "website-lead"],
+    source: "Warm T.L.C. (MarketingProfs QR)",
+    utm: parseUtm((k) => body[k]),
+  });
 
   return NextResponse.json({ success: true });
 }

@@ -38,11 +38,3 @@ export function parseUtm(get: (key: string) => unknown): Utm {
   }
   return utm;
 }
-
-// GHL v1 contact payload fragment. Requires custom fields whose keys match
-// UTM_KEYS (utm_source, …) to exist on the GHL contact.
-export function ghlUtmFields(utm: Utm) {
-  const customField: Record<string, string> = {};
-  for (const k of UTM_KEYS) if (utm[k]) customField[k] = utm[k];
-  return Object.keys(customField).length ? { customField } : {};
-}

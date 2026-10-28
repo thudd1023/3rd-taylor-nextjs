@@ -1,4 +1,5 @@
-import { ghlUtmFields, parseUtm, type Utm } from "@/lib/utm";
+import { parseUtm } from "@/lib/utm";
+import { upsertGhlContact } from "@/lib/ghl";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
@@ -61,41 +62,6 @@ function notifyRecipients() {
     .filter(Boolean);
 }
 
-async function addToGHL(contact: {
-  firstName: string;
-  lastName: string;
-  email: string;
-  companyName: string;
-  source: string;
-  utm: Utm;
-}) {
-  if (!process.env.GHL_API_KEY) {
-    console.error("[lets-talk] GHL_API_KEY missing — skipping CRM sync");
-    return;
-  }
-  const res = await fetch("https://rest.gohighlevel.com/v1/contacts/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.GHL_API_KEY}`,
-    },
-    body: JSON.stringify({
-      locationId: process.env.GHL_LOCATION_ID,
-      email: contact.email,
-      firstName: contact.firstName,
-      lastName: contact.lastName,
-      companyName: contact.companyName,
-      tags: ["website-lead", contact.source],
-      source: "Website Form",
-      ...ghlUtmFields(contact.utm),
-    }),
-  });
-
-  if (!res.ok) {
-    const body = await res.text();
-    console.error("[lets-talk] GHL error:", res.status, body);
-  }
-}
 
 export async function POST(request: NextRequest) {
   const base = new URL(request.url).origin;
@@ -241,7 +207,15 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  await addToGHL({ firstName, lastName, email, companyName: company, source, utm: parseUtm((k) => formData.get(k)) });
+  await upsertGhlContact("lets-talk", {
+    email,
+    firstName,
+    lastName,
+    companyName: company,
+    tags: ["website-lead", source],
+    source: "Website Form",
+    utm: parseUtm((k) => formData.get(k)),
+  });
 
   if (process.env.RESEND_API_KEY && !process.env.RESEND_API_KEY.startsWith("re_REPLACE")) {
     const resend = getResend();
