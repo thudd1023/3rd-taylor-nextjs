@@ -16,6 +16,7 @@ const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
   display: "swap",
 });
+import UtmCapture from "@/components/UtmCapture";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.3rdandtaylor.com"),
@@ -57,6 +58,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
+        <UtmCapture />
         <Providers>{children}</Providers>
       </body>
     </html>

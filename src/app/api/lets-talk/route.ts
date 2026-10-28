@@ -1,3 +1,4 @@
+import { ghlUtmFields, parseUtm, type Utm } from "@/lib/utm";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
@@ -66,6 +67,7 @@ async function addToGHL(contact: {
   email: string;
   companyName: string;
   source: string;
+  utm: Utm;
 }) {
   if (!process.env.GHL_API_KEY) {
     console.error("[lets-talk] GHL_API_KEY missing — skipping CRM sync");
@@ -85,6 +87,7 @@ async function addToGHL(contact: {
       companyName: contact.companyName,
       tags: ["website-lead", contact.source],
       source: "Website Form",
+      ...ghlUtmFields(contact.utm),
     }),
   });
 
@@ -238,7 +241,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  await addToGHL({ firstName, lastName, email, companyName: company, source });
+  await addToGHL({ firstName, lastName, email, companyName: company, source, utm: parseUtm((k) => formData.get(k)) });
 
   if (process.env.RESEND_API_KEY && !process.env.RESEND_API_KEY.startsWith("re_REPLACE")) {
     const resend = getResend();

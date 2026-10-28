@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { ghlUtmFields, parseUtm, type Utm } from "@/lib/utm";
 
 const EMAIL_RE = /^[^\s@<>()[\]\\,;:"]+@([a-z0-9-]+\.)+[a-z]{2,}$/i;
 
@@ -160,6 +161,7 @@ async function addToGHL(contact: {
   companyName: string;
   companyWebsite: string;
   jobTitle: string;
+  utm: Utm;
 }) {
   if (!process.env.GHL_API_KEY) {
     console.error("[gtm-audit-request] GHL_API_KEY missing — skipping CRM sync");
@@ -181,6 +183,7 @@ async function addToGHL(contact: {
       title: contact.jobTitle,
       tags: ["gtm-audit-request", "website-lead"],
       source: "GTM Audit Request (Event/QR)",
+      ...ghlUtmFields(contact.utm),
     }),
   });
   if (!res.ok) {
@@ -269,6 +272,7 @@ export async function POST(request: NextRequest) {
     companyName: company_name,
     companyWebsite: company_website,
     jobTitle: job_title,
+    utm: parseUtm((k) => body[k]),
   });
 
   return NextResponse.json({ success: true });

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, FileText, Video, Search, BarChart3, Target, PenTool, Sparkles, ArrowRight, Loader2 } from "lucide-react";
+import { useUtm } from "@/lib/use-utm";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 
@@ -20,6 +21,7 @@ function HeroForm() {
     job_title: "",
     website_url: "", // honeypot
   });
+  const utm = useUtm();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,7 +37,7 @@ function HeroForm() {
       const res = await fetch("/api/gtm-audit-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(fields),
+        body: JSON.stringify({ ...fields, ...utm }),
       });
       const data = await res.json();
       if (!res.ok) {
