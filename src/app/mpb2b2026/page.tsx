@@ -16,6 +16,7 @@ const eyebrowClass = "text-xs font-semibold uppercase tracking-widest text-accen
 
 const auditAreas = [
   "Website messaging & positioning",
+  "Product marketing & positioning",
   "SEO structure & search demand",
   "Paid ad library review",
   "Content strategy assessment",
@@ -67,70 +68,84 @@ export default function WarmTlcPage() {
   return (
     <main className="min-h-screen bg-background">
       <section className="relative overflow-hidden bg-gradient-sunset grain">
-        <div className="container relative py-12 md:py-20 max-w-3xl">
+        <div className="container relative py-10 md:py-16 max-w-5xl">
           <p className="text-xs font-semibold uppercase tracking-widest text-ink/70">3rd + Taylor</p>
           <h1 className="mt-4 font-display text-4xl md:text-6xl leading-[0.98] font-medium text-balance">
-            Take it home, then <em className="italic text-accent">ask for the second date.</em>
+            Here&apos;s your session resources
           </h1>
-          <p className="mt-5 text-lg text-muted-foreground leading-relaxed">
-            Everything from the session, in one place.
+          <p className="mt-4 text-lg text-muted-foreground">
+            Take it home, then <em className="italic text-accent">ask for the second date.</em>
           </p>
         </div>
       </section>
 
-      {WARM_TLC_WORKSHEET_URL && (
-        <section className="py-10 md:py-14 bg-background">
-          <div className="container max-w-3xl">
-            <div className={eyebrowClass}>1 · Worksheet</div>
-            <h2 className="mt-2 font-display text-2xl md:text-4xl font-medium leading-tight">
-              Your Warm T.L.C. worksheet
-            </h2>
-            <a
-              href={WARM_TLC_WORKSHEET_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`mt-6 ${buttonClass}`}
-            >
-              <Download className="h-4 w-4" /> Get the worksheet
-            </a>
-          </div>
-        </section>
-      )}
+      <section className="py-10 md:py-16 bg-background">
+        <div className="container max-w-5xl">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
+            {/* Left: resources */}
+            <div className="space-y-12">
+              <div>
+                <div className={eyebrowClass}>1</div>
+                <h2 className="mt-2 font-display text-2xl md:text-3xl font-medium leading-tight">
+                  Access the worksheet to plan your own campaign
+                </h2>
+                {WARM_TLC_WORKSHEET_URL ? (
+                  <a
+                    href={WARM_TLC_WORKSHEET_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`mt-5 ${buttonClass}`}
+                  >
+                    <Download className="h-4 w-4" /> Get the worksheet
+                  </a>
+                ) : (
+                  <span
+                    aria-disabled="true"
+                    className={`mt-5 ${buttonClass} opacity-50 cursor-not-allowed`}
+                  >
+                    <Download className="h-4 w-4" /> Get the worksheet
+                  </span>
+                )}
+              </div>
 
-      {WARM_TLC_LLM_PROMPT && (
-        <section className="py-10 md:py-14 bg-cream">
-          <div className="container max-w-3xl">
-            <div className={eyebrowClass}>2 · Prompt</div>
-            <h2 className="mt-2 font-display text-2xl md:text-4xl font-medium leading-tight">
-              A copy-and-paste prompt for your LLM
-            </h2>
-            <CopyPrompt text={WARM_TLC_LLM_PROMPT} />
-          </div>
-        </section>
-      )}
+              <div>
+                <div className={eyebrowClass}>2</div>
+                <h2 className="mt-2 font-display text-2xl md:text-3xl font-medium leading-tight">
+                  Copy and paste the prompt to use AI to build your next Warm T.L.C. campaign
+                </h2>
+                <CopyPrompt text={WARM_TLC_LLM_PROMPT} />
+              </div>
+            </div>
 
-      <section className="py-10 md:py-14 bg-background">
-        <div className="container max-w-3xl">
-          <div className={eyebrowClass}>Next step</div>
-          <h2 className="mt-2 font-display text-2xl md:text-4xl font-medium leading-tight">
-            Book your free GTM audit
-          </h2>
-          <p className="mt-4 text-muted-foreground leading-relaxed">
-            In a free 30-minute call we review your public-facing go-to-market — and you leave with a
-            free end-to-end Warm T.L.C. campaign plan.
-          </p>
-          <ul className="mt-6 space-y-2.5">
-            {auditAreas.map((item) => (
-              <li key={item} className="flex items-center gap-2.5 text-ink">
-                <Check className="h-4 w-4 text-accent flex-shrink-0" />
-                {item}
-              </li>
-            ))}
-          </ul>
-          <a href={bookingUrl} target="_blank" rel="noopener noreferrer" className={`mt-8 ${buttonClass}`}>
-            Schedule my free GTM audit <ArrowRight className="h-4 w-4" />
-          </a>
-          <p className="mt-5 text-sm text-muted-foreground">Find us at booth #108.</p>
+            {/* Right: free audit */}
+            <div className="rounded-3xl border border-border bg-cream p-6 md:p-8 lg:sticky lg:top-8">
+              <div className={eyebrowClass}>3</div>
+              <h2 className="mt-2 font-display text-2xl md:text-3xl font-medium leading-tight">
+                Book your free GTM audit
+              </h2>
+              <p className="mt-4 text-muted-foreground leading-relaxed">
+                In a free 30-minute call we review your public-facing go-to-market — and you leave
+                with a free end-to-end Warm T.L.C. campaign plan.
+              </p>
+              <ul className="mt-6 space-y-2.5">
+                {auditAreas.map((item) => (
+                  <li key={item} className="flex items-center gap-2.5 text-ink">
+                    <Check className="h-4 w-4 text-accent flex-shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href={bookingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`mt-8 ${buttonClass}`}
+              >
+                Schedule my free GTM audit <ArrowRight className="h-4 w-4" />
+              </a>
+              <p className="mt-5 text-sm text-muted-foreground">Find us at booth #108.</p>
+            </div>
+          </div>
         </div>
       </section>
       <SiteFooter />
