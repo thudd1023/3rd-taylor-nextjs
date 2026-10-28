@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ArrowRight, Check, Copy, Download } from "lucide-react";
+import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 import { useUtm } from "@/lib/use-utm";
 import {
@@ -67,6 +68,7 @@ export default function WarmTlcPage() {
 
   return (
     <main className="min-h-screen bg-background">
+      <SiteNav />
       <section className="relative overflow-hidden bg-gradient-sunset grain">
         <div className="container relative py-10 md:py-16 max-w-5xl">
           <p className="text-xs font-semibold uppercase tracking-widest text-ink/70">3rd + Taylor</p>
@@ -118,7 +120,7 @@ export default function WarmTlcPage() {
             </div>
 
             {/* Right: free audit */}
-            <div className="rounded-3xl border border-border bg-cream p-6 md:p-8 lg:sticky lg:top-8">
+            <div className="rounded-3xl border border-border bg-cream p-6 md:p-8 lg:sticky lg:top-24">
               <div className={eyebrowClass}>3</div>
               <h2 className="mt-2 font-display text-2xl md:text-3xl font-medium leading-tight">
                 Book your free GTM audit
