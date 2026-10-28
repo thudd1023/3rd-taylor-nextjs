@@ -1,145 +1,136 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowRight, Check, Loader2 } from "lucide-react";
-import { useUtm } from "@/lib/use-utm";
+import { ArrowRight, Check, Copy, Download } from "lucide-react";
 import SiteFooter from "@/components/SiteFooter";
+import { useUtm } from "@/lib/use-utm";
+import {
+  WARM_TLC_CALENDLY_URL,
+  WARM_TLC_LLM_PROMPT,
+  WARM_TLC_WORKSHEET_URL,
+} from "@/lib/warm-tlc";
 
-const inputClass =
-  "w-full rounded-xl border border-border bg-cream/60 px-4 py-3 text-base text-ink placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-colors";
-const labelClass = "block text-xs font-semibold uppercase tracking-wider text-ink/60 mb-1";
+const buttonClass =
+  "inline-flex items-center justify-center gap-2 bg-accent text-ink text-base font-semibold px-6 py-3.5 rounded-full hover:bg-accent/90 transition-colors";
+const eyebrowClass = "text-xs font-semibold uppercase tracking-widest text-accent";
 
-function GateForm() {
-  const router = useRouter();
-  const [fields, setFields] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    company_website: "",
-    website_url: "", // honeypot
-  });
-  const utm = useUtm();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+const auditAreas = [
+  "Website messaging & positioning",
+  "SEO structure & search demand",
+  "Paid ad library review",
+  "Content strategy assessment",
+];
 
-  const set = (k: keyof typeof fields) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setFields((f) => ({ ...f, [k]: e.target.value }));
+function CopyPrompt({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+  async function copy() {
     try {
-      const res = await fetch("/api/warm-tlc", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...fields, ...utm }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Something went wrong. Please try again.");
-        setLoading(false);
-        return;
-      }
-      try {
-        sessionStorage.setItem(
-          "warm-tlc",
-          JSON.stringify({
-            name: `${fields.first_name} ${fields.last_name}`.trim(),
-            email: fields.email,
-          }),
-        );
-      } catch {}
-      router.push("/mpb2b2026/thank-you");
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch {
-      setError("Something went wrong. Please try again or email tiffany.nwahiri@3rdandtaylor.com.");
-      setLoading(false);
+      // Clipboard blocked (e.g. in-app browser) — the text is selectable below.
     }
   }
 
   return (
-    <div className="bg-background rounded-3xl border border-border shadow-bold p-6 md:p-8">
-      {error && (
-        <div className="mb-5 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
-          {error}
-        </div>
-      )}
-      <form onSubmit={handleSubmit} noValidate>
-        {/* Honeypot */}
-        <input
-          type="text"
-          name="website_url"
-          value={fields.website_url}
-          onChange={set("website_url")}
-          tabIndex={-1}
-          autoComplete="off"
-          aria-hidden="true"
-          style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", overflow: "hidden" }}
-        />
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass} htmlFor="w_first_name">First name</label>
-            <input id="w_first_name" type="text" required autoComplete="given-name" className={inputClass} value={fields.first_name} onChange={set("first_name")} />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="w_last_name">Last name</label>
-            <input id="w_last_name" type="text" required autoComplete="family-name" className={inputClass} value={fields.last_name} onChange={set("last_name")} />
-          </div>
-        </div>
-        <div className="mt-4">
-          <label className={labelClass} htmlFor="w_email">Work email</label>
-          <input id="w_email" type="email" required autoComplete="email" placeholder="jane@yourcompany.com" className={inputClass} value={fields.email} onChange={set("email")} />
-        </div>
-        <div className="mt-4">
-          <label className={labelClass} htmlFor="w_website">Company website</label>
-          <input id="w_website" type="text" inputMode="url" required autoComplete="url" placeholder="yourcompany.com" className={inputClass} value={fields.company_website} onChange={set("company_website")} />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-6 w-full inline-flex items-center justify-center gap-2 bg-accent text-ink text-base font-semibold px-6 py-3.5 rounded-full hover:bg-accent/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {loading ? (
-            <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</>
-          ) : (
-            <>Send me the resources <ArrowRight className="h-4 w-4" /></>
-          )}
-        </button>
-      </form>
+    <div className="mt-5 rounded-2xl border border-border bg-cream/60 p-5">
+      <pre className="whitespace-pre-wrap break-words font-sans text-sm leading-relaxed text-ink select-all">
+        {text}
+      </pre>
+      <button
+        type="button"
+        onClick={copy}
+        className="mt-4 inline-flex items-center gap-2 rounded-full border border-ink/20 bg-background px-4 py-2 text-sm font-semibold text-ink hover:border-accent transition-colors"
+      >
+        {copied ? <Check className="h-4 w-4 text-accent" /> : <Copy className="h-4 w-4" />}
+        {copied ? "Copied" : "Copy prompt"}
+      </button>
     </div>
   );
 }
 
-const gets = [
-  "Your Warm T.L.C. worksheet",
-  "A copy-and-paste prompt for your LLM",
-  "A free GTM audit and a free end-to-end Warm T.L.C. campaign plan",
-];
-
 export default function WarmTlcPage() {
+  const utm = useUtm();
+
+  // Carry attribution into the Calendly booking.
+  const calendlyParams = new URLSearchParams({
+    utm_source: utm.utm_source || "marketingprofs",
+    utm_medium: utm.utm_medium || "qr",
+    utm_campaign: utm.utm_campaign || "mpb2b2026",
+  });
+  if (utm.utm_term) calendlyParams.set("utm_term", utm.utm_term);
+  if (utm.utm_content) calendlyParams.set("utm_content", utm.utm_content);
+  const bookingUrl = `${WARM_TLC_CALENDLY_URL}?${calendlyParams.toString()}`;
+
   return (
     <main className="min-h-screen bg-background">
       <section className="relative overflow-hidden bg-gradient-sunset grain">
-        <div className="container relative py-12 md:py-20 max-w-5xl">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-ink/70">3rd + Taylor</p>
-              <h1 className="mt-4 font-display text-4xl md:text-6xl leading-[0.98] font-medium text-balance">
-                Take it home, then <em className="italic text-accent">ask for the second date.</em>
-              </h1>
-              <ul className="mt-8 space-y-3">
-                {gets.map((item) => (
-                  <li key={item} className="flex gap-2.5 text-base text-ink">
-                    <Check className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-6 text-sm text-ink/70">Find us at booth #108.</p>
-            </div>
-            <GateForm />
+        <div className="container relative py-12 md:py-20 max-w-3xl">
+          <p className="text-xs font-semibold uppercase tracking-widest text-ink/70">3rd + Taylor</p>
+          <h1 className="mt-4 font-display text-4xl md:text-6xl leading-[0.98] font-medium text-balance">
+            Take it home, then <em className="italic text-accent">ask for the second date.</em>
+          </h1>
+          <p className="mt-5 text-lg text-muted-foreground leading-relaxed">
+            Everything from the session, in one place.
+          </p>
+        </div>
+      </section>
+
+      {WARM_TLC_WORKSHEET_URL && (
+        <section className="py-10 md:py-14 bg-background">
+          <div className="container max-w-3xl">
+            <div className={eyebrowClass}>1 · Worksheet</div>
+            <h2 className="mt-2 font-display text-2xl md:text-4xl font-medium leading-tight">
+              Your Warm T.L.C. worksheet
+            </h2>
+            <a
+              href={WARM_TLC_WORKSHEET_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`mt-6 ${buttonClass}`}
+            >
+              <Download className="h-4 w-4" /> Get the worksheet
+            </a>
           </div>
+        </section>
+      )}
+
+      {WARM_TLC_LLM_PROMPT && (
+        <section className="py-10 md:py-14 bg-cream">
+          <div className="container max-w-3xl">
+            <div className={eyebrowClass}>2 · Prompt</div>
+            <h2 className="mt-2 font-display text-2xl md:text-4xl font-medium leading-tight">
+              A copy-and-paste prompt for your LLM
+            </h2>
+            <CopyPrompt text={WARM_TLC_LLM_PROMPT} />
+          </div>
+        </section>
+      )}
+
+      <section className="py-10 md:py-14 bg-background">
+        <div className="container max-w-3xl">
+          <div className={eyebrowClass}>Next step</div>
+          <h2 className="mt-2 font-display text-2xl md:text-4xl font-medium leading-tight">
+            Book your free GTM audit
+          </h2>
+          <p className="mt-4 text-muted-foreground leading-relaxed">
+            In a free 30-minute call we review your public-facing go-to-market — and you leave with a
+            free end-to-end Warm T.L.C. campaign plan.
+          </p>
+          <ul className="mt-6 space-y-2.5">
+            {auditAreas.map((item) => (
+              <li key={item} className="flex items-center gap-2.5 text-ink">
+                <Check className="h-4 w-4 text-accent flex-shrink-0" />
+                {item}
+              </li>
+            ))}
+          </ul>
+          <a href={bookingUrl} target="_blank" rel="noopener noreferrer" className={`mt-8 ${buttonClass}`}>
+            Schedule my free GTM audit <ArrowRight className="h-4 w-4" />
+          </a>
+          <p className="mt-5 text-sm text-muted-foreground">Find us at booth #108.</p>
         </div>
       </section>
       <SiteFooter />

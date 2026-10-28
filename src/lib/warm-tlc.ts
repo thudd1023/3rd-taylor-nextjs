@@ -1,6 +1,4 @@
-// Resources delivered after the Warm T.L.C. QR form is submitted.
-// Fill these in once the worksheet and prompt are ready — empty values are
-// skipped in the confirmation email and on the thank-you page.
+// Content for the /mpb2b2026 event page. Empty values hide their section.
 export const WARM_TLC_WORKSHEET_URL = "";
 export const WARM_TLC_LLM_PROMPT = "";
 
