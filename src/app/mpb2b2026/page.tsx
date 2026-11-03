@@ -38,7 +38,7 @@ function CopyPrompt({ text }: { text: string }) {
 
   return (
     <div className="mt-5 rounded-2xl border border-border bg-cream/60 p-5">
-      <pre className="whitespace-pre-wrap break-words font-sans text-sm leading-relaxed text-ink select-all">
+      <pre className="max-h-[26rem] overflow-y-auto whitespace-pre-wrap break-words font-sans text-sm leading-relaxed text-ink">
         {text}
       </pre>
       <button
