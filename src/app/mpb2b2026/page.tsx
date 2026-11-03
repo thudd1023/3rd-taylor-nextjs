@@ -69,6 +69,14 @@ export default function WarmTlcPage() {
   return (
     <main className="min-h-screen bg-background">
       <SiteNav />
+      <a
+        href="https://www.linkedin.com/in/tiffanynwahiri"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-center gap-2 bg-accent px-4 py-3 text-sm md:text-base font-semibold text-ink hover:bg-accent/90 transition-colors"
+      >
+        Let&apos;s connect on LinkedIn! <ArrowRight className="h-4 w-4" />
+      </a>
       <section className="relative overflow-hidden bg-gradient-sunset grain">
         <div className="container relative py-10 md:py-16 max-w-5xl">
           <p className="text-xs font-semibold uppercase tracking-widest text-ink/70">3rd + Taylor</p>
