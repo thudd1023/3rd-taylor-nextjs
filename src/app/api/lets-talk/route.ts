@@ -118,11 +118,19 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const fullName = formData.get("full_name")?.toString().trim() ?? "";
+  // Event registration forms send first_name/last_name/company_website;
+  // the contact form sends a single full_name.
+  const firstNameInput = formData.get("first_name")?.toString().trim() ?? "";
+  const lastNameInput = formData.get("last_name")?.toString().trim() ?? "";
+  const websiteInput = (formData.get("company_website")?.toString().trim() ?? "").slice(0, 200);
+  const fullName =
+    formData.get("full_name")?.toString().trim() || `${firstNameInput} ${lastNameInput}`.trim();
   const email = formData.get("email")?.toString().trim().toLowerCase() ?? "";
   const company = formData.get("company")?.toString().trim() ?? "";
   const interest = formData.get("interest")?.toString().trim() ?? "";
-  const message = formData.get("message")?.toString().trim() ?? "";
+  const message =
+    formData.get("message")?.toString().trim() ||
+    (websiteInput ? `Company website: ${websiteInput}` : "");
   const source       = formData.get("source")?.toString() ?? "website";
   const utm_source   = formData.get("utm_source")?.toString()   ?? null;
   const utm_medium   = formData.get("utm_medium")?.toString()   ?? null;
@@ -176,8 +184,9 @@ export async function POST(request: NextRequest) {
   }
 
   const spaceIdx = fullName.indexOf(" ");
-  const firstName = spaceIdx > -1 ? fullName.slice(0, spaceIdx) : fullName;
-  const lastName = spaceIdx > -1 ? fullName.slice(spaceIdx + 1) : "";
+  const firstName = firstNameInput || (spaceIdx > -1 ? fullName.slice(0, spaceIdx) : fullName);
+  const lastName = firstNameInput ? lastNameInput : spaceIdx > -1 ? fullName.slice(spaceIdx + 1) : "";
+  const isEventRsvp = source.startsWith("seine-to-sf-adopt-ai");
 
   const lead = {
     first_name: firstName,
@@ -212,6 +221,7 @@ export async function POST(request: NextRequest) {
     firstName,
     lastName,
     companyName: company,
+    website: websiteInput || undefined,
     tags: ["website-lead", source],
     source: "Website Form",
     utm: parseUtm((k) => formData.get(k)),
@@ -270,8 +280,14 @@ export async function POST(request: NextRequest) {
       const visitor = await resend.emails.send({
         from: "Tiffany at 3rd & Taylor <tiffany.nwahiri@results.3rdandtaylor.com>",
         to: [email],
-        subject: "Got your note — talk soon!",
-        html: `
+        subject: isEventRsvp ? "We received your registration" : "Got your note — talk soon!",
+        html: isEventRsvp
+          ? `
+          <p>Hi ${safeFirst},</p>
+          <p>Thanks for registering for our private dinner in Paris on Thursday, December 3 (8:30–10:30 PM). Seats are curated, so we'll follow up personally to confirm. Once your seat is confirmed, we'll share the location.</p>
+          <p>Talk soon,<br><strong>Tiffany</strong><br>3rd & Taylor</p>
+        `
+          : `
           <p>Hi ${safeFirst},</p>
           <p>Thanks for reaching out to 3rd & Taylor. I've received your message and will be back with a point of view on your fastest path to pipeline within one business day.</p>
           <p>Talk soon,<br><strong>Tiffany</strong><br>3rd & Taylor</p>
