@@ -128,9 +128,10 @@ export async function POST(request: NextRequest) {
   const email = formData.get("email")?.toString().trim().toLowerCase() ?? "";
   const company = formData.get("company")?.toString().trim() ?? "";
   const interest = formData.get("interest")?.toString().trim() ?? "";
-  const message =
-    formData.get("message")?.toString().trim() ||
-    (websiteInput ? `Company website: ${websiteInput}` : "");
+  // Spam patterns run against what the visitor actually typed, never the
+  // website we fold into the message (it can legitimately match a pattern).
+  const typedMessage = formData.get("message")?.toString().trim() ?? "";
+  const message = typedMessage || (websiteInput ? `Company website: ${websiteInput}` : "");
   const source       = formData.get("source")?.toString() ?? "website";
   const utm_source   = formData.get("utm_source")?.toString()   ?? null;
   const utm_medium   = formData.get("utm_medium")?.toString()   ?? null;
@@ -161,7 +162,7 @@ export async function POST(request: NextRequest) {
     /add me to your (newsletter|mailing list)/i,
     /3rdandtaylor\.com/i,
   ];
-  if (SPAM_PATTERNS.some((p) => p.test(message))) {
+  if (SPAM_PATTERNS.some((p) => p.test(typedMessage))) {
     return NextResponse.redirect(`${base}/submission-thank-you`, 303);
   }
 
