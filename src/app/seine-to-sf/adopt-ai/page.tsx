@@ -5,7 +5,7 @@ import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 import LetsTalkForm from "@/components/LetsTalkForm";
 
-const RSVPForm = () => <LetsTalkForm source="seine-to-sf-adopt-ai-rsvp" />;
+const RSVPForm = () => <LetsTalkForm source="seine-to-sf-adopt-ai-rsvp" layout="event" />;
 
 export default function SeineToSFAdoptAI() {
   return (

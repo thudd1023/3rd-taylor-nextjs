@@ -7,6 +7,9 @@ import { UtmHiddenFields } from "@/lib/use-utm";
 type Props = {
   variant?: "light" | "dark";
   source?: string;
+  // "event" swaps the contact fields for a short registration form
+  // (first name, last name, email, company website).
+  layout?: "contact" | "event";
 };
 
 type TurnstileApi = {
@@ -45,7 +48,7 @@ function loadTurnstile(): Promise<TurnstileApi> {
   return turnstileLoader as Promise<TurnstileApi>;
 }
 
-const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
+const LetsTalkForm = ({ variant = "light", source = "website", layout = "contact" }: Props) => {
   const dark = variant === "dark";
   const hasTurnstile = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
@@ -114,6 +117,69 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
 
       {hasTurnstile && <div ref={turnstileRef} />}
 
+      {layout === "event" ? (
+        <>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${labelCls}`}>
+            First Name
+          </label>
+          <input
+            required
+            type="text"
+            name="first_name"
+            autoComplete="given-name"
+            className={`w-full rounded-full border px-5 py-3 text-sm outline-none transition-colors ${inputCls}`}
+            placeholder="First name"
+          />
+        </div>
+        <div>
+          <label className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${labelCls}`}>
+            Last Name
+          </label>
+          <input
+            required
+            type="text"
+            name="last_name"
+            autoComplete="family-name"
+            className={`w-full rounded-full border px-5 py-3 text-sm outline-none transition-colors ${inputCls}`}
+            placeholder="Last name"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${labelCls}`}>
+          Email Address
+        </label>
+        <input
+          required
+          type="email"
+          name="email"
+          autoComplete="email"
+          className={`w-full rounded-full border px-5 py-3 text-sm outline-none transition-colors ${inputCls}`}
+          placeholder="you@company.com"
+        />
+      </div>
+
+      <div>
+        <label className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${labelCls}`}>
+          Company Website
+        </label>
+        <input
+          required
+          type="text"
+          inputMode="url"
+          name="company_website"
+          autoComplete="url"
+          className={`w-full rounded-full border px-5 py-3 text-sm outline-none transition-colors ${inputCls}`}
+          placeholder="company.com"
+        />
+      </div>
+
+        </>
+      ) : (
+        <>
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${labelCls}`}>
@@ -187,6 +253,9 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
         />
       </div>
 
+        </>
+      )}
+
       <button
         type="submit"
         disabled={!turnstileReady}
@@ -194,7 +263,7 @@ const LetsTalkForm = ({ variant = "light", source = "website" }: Props) => {
           dark ? "bg-warm text-ink hover:bg-cream" : "bg-ink text-cream hover:bg-accent"
         }`}
       >
-        {turnstileReady ? "Send" : turnstileFailed ? "Verification failed" : "Verifying…"}
+        {turnstileReady ? (layout === "event" ? "Request my seat" : "Send") : turnstileFailed ? "Verification failed" : "Verifying…"}
         <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
       </button>
       {turnstileFailed && (
